@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,24 +15,36 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Z.ai Code Scaffold - AI-Powered Development",
-  description: "Modern Next.js scaffold optimized for AI-powered development with Z.ai. Built with TypeScript, Tailwind CSS, and shadcn/ui.",
-  keywords: ["Z.ai", "Next.js", "TypeScript", "Tailwind CSS", "shadcn/ui", "AI development", "React"],
-  authors: [{ name: "Z.ai Team" }],
+  title: "Rishabh Pandey — Full-Stack & AI Engineer",
+  description:
+    "Portfolio of Rishabh Pandey, a B.Tech IT student and full-stack developer specializing in AI-integrated web applications, computer vision, and scalable React systems.",
+  keywords: [
+    "Rishabh Pandey",
+    "Full-Stack Developer",
+    "AI Engineer",
+    "React.js",
+    "Java",
+    "OpenCV",
+    "Gemini API",
+    "Portfolio",
+    "Delhi",
+  ],
+  authors: [{ name: "Rishabh Pandey" }],
   icons: {
     icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
   },
   openGraph: {
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
-    url: "https://chat.z.ai",
-    siteName: "Z.ai",
+    title: "Rishabh Pandey — Full-Stack & AI Engineer",
+    description:
+      "Building AI-integrated web applications and real-time computer vision systems.",
+    siteName: "Rishabh Pandey",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Z.ai Code Scaffold",
-    description: "AI-powered development with modern React stack",
+    title: "Rishabh Pandey — Full-Stack & AI Engineer",
+    description:
+      "Building AI-integrated web applications and real-time computer vision systems.",
   },
 };
 
@@ -45,8 +58,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
-        {children}
-        <Toaster />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          {children}
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );
