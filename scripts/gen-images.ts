@@ -11,51 +11,41 @@ async function gen(prompt: string, name: string, size: string) {
     const res = await zai.images.generations.create({ prompt, size });
     const b64 = res.data[0].base64;
     fs.writeFileSync(path.join(OUT_DIR, name), Buffer.from(b64, 'base64'));
-    console.log('✓', name);
+    console.log('OK', name);
   } catch (e) {
-    console.error('✗', name, (e as Error).message);
+    console.error('FAIL', name, (e as Error).message);
   }
 }
 
 async function main() {
   await Promise.all([
     gen(
-      'Professional portrait headshot of a confident young software engineer, soft studio lighting, neutral dark teal background, sharp focus, modern, approachable, high quality',
+      'Professional portrait headshot of a confident young Indian male software engineer in his early twenties, short neat black hair, light stubble, wearing a smart dark casual shirt, soft studio lighting, dark teal emerald gradient background, sharp focus, modern, approachable, high quality corporate headshot',
       'avatar.png',
       '1024x1024'
     ),
     gen(
-      'Sleek analytics dashboard UI on a laptop screen, dark mode, emerald green charts and data visualizations, modern interface design, clean, professional product shot',
-      'project-1.png',
+      'Modern AI interview coaching web app interface, dark mode dashboard, chat conversation bubbles, emerald green accents, mock interview UI with timer and feedback panel, clean professional SaaS design, product screenshot, high detail',
+      'project-virtus.png',
       '1344x768'
     ),
     gen(
-      'Modern e-commerce mobile app interface mockup, clean product grid, emerald accent colors, minimalist design, floating on soft gradient background, professional UI showcase',
-      'project-2.png',
+      'Real-time face recognition surveillance system interface, computer vision UI, bounding boxes around detected faces on video feed, emerald green detection overlays, dark technical dashboard, OpenCV style, professional, high detail',
+      'project-sentinel.png',
       '1344x768'
     ),
     gen(
-      'AI chatbot conversation interface, dark themed UI with chat bubbles, glowing emerald accents, futuristic but clean, modern web app design, product screenshot',
-      'project-3.png',
+      'Sleek modern personal portfolio website homepage on a laptop screen, dark elegant theme with emerald accents, hero section with developer name and avatar, clean typography, professional web design showcase',
+      'project-portfolio.png',
       '1344x768'
     ),
     gen(
-      'Collaborative task management kanban board interface, cards with emerald labels, clean modern SaaS design, organized columns, professional UI screenshot',
-      'project-4.png',
-      '1344x768'
-    ),
-    gen(
-      'Abstract code editor view with colorful syntax highlighting on dark background, emerald and teal tones, developer aesthetic, modern, high detail',
-      'project-5.png',
-      '1344x768'
-    ),
-    gen(
-      'Real-time music streaming web player interface, album art, waveform progress bar, emerald accents, dark elegant UI, modern product design',
-      'project-6.png',
-      '1344x768'
+      'Abstract dark emerald teal gradient background with subtle flowing network nodes and soft glowing particles, elegant minimal, tech aesthetic, deep moody lighting, high quality digital art',
+      'hero-bg.png',
+      '1440x720'
     ),
   ]);
-  console.log('done');
+  console.log('ALL DONE');
 }
 
 main();
