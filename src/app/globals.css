@@ -127,18 +127,18 @@
     background-color: var(--background);
     background-image:
       radial-gradient(
-        ellipse 60% 50% at 85% 8%,
-        oklch(0.72 0.15 162 / 0.10),
-        transparent 70%
+        ellipse 70% 55% at 82% 10%,
+        oklch(0.72 0.15 162 / 0.16),
+        transparent 65%
       ),
       radial-gradient(
-        ellipse 50% 40% at 10% 92%,
-        oklch(0.68 0.13 185 / 0.08),
-        transparent 70%
+        ellipse 55% 45% at 8% 88%,
+        oklch(0.68 0.13 185 / 0.12),
+        transparent 65%
       ),
       radial-gradient(
-        ellipse 80% 60% at 50% 50%,
-        oklch(0.7 0.02 90 / 0.03),
+        ellipse 90% 70% at 50% 50%,
+        oklch(0.7 0.02 90 / 0.05),
         transparent 80%
       );
     background-attachment: fixed;
@@ -146,19 +146,19 @@
   .dark body {
     background-image:
       radial-gradient(
-        ellipse 65% 55% at 88% 5%,
-        oklch(0.72 0.15 162 / 0.16),
-        transparent 65%
+        ellipse 70% 55% at 82% 8%,
+        oklch(0.72 0.15 162 / 0.22),
+        transparent 60%
       ),
       radial-gradient(
-        ellipse 55% 45% at 5% 95%,
-        oklch(0.6 0.14 230 / 0.10),
-        transparent 65%
+        ellipse 60% 50% at 5% 92%,
+        oklch(0.6 0.14 230 / 0.15),
+        transparent 60%
       ),
       radial-gradient(
-        ellipse 70% 50% at 50% 50%,
-        oklch(0.5 0.02 90 / 0.05),
-        transparent 80%
+        ellipse 75% 55% at 50% 50%,
+        oklch(0.5 0.02 90 / 0.08),
+        transparent 75%
       );
   }
   html {
