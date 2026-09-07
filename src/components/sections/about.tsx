@@ -33,65 +33,81 @@ export function About() {
     <section id="about" className="relative py-24 sm:py-32">
       <SectionLabel index="01" title="About" kicker="Profile" />
 
-      <div className="grid gap-12 md:grid-cols-[0.85fr_1.15fr] md:gap-16">
-        {/* Portrait */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6 }}
-          className="relative"
-        >
-          <div className="relative aspect-[4/5] overflow-hidden rounded-sm border border-border/50">
-            <img
-              src="/images/avatar.png"
-              alt="Portrait of Rishabh Pandey"
-              className="h-full w-full object-cover grayscale-[0.15] transition-all duration-700 hover:grayscale-0"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
+      {/* Opening statement — drop-cap editorial style */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-80px" }}
+        transition={{ duration: 0.6 }}
+        className="grid gap-10 md:grid-cols-[1fr_2fr] md:gap-16"
+      >
+        {/* Left rail — meta */}
+        <div className="space-y-6">
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">
+              Based in
+            </p>
+            <p className="mt-1 font-display text-lg font-medium tracking-tight">
+              {profile.location}
+            </p>
           </div>
-          {/* caption strip */}
-          <div className="mt-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground/70">
-            <span>Fig. 01 — Portrait</span>
-            <span>2025</span>
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">
+              Status
+            </p>
+            <p className="mt-1 flex items-center gap-2 font-display text-lg font-medium tracking-tight">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+              </span>
+              Open to internships
+            </p>
           </div>
-        </motion.div>
+          <div>
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">
+              Focus
+            </p>
+            <p className="mt-1 font-display text-lg font-medium tracking-tight">
+              Software / Cloud / Automation
+            </p>
+          </div>
+        </div>
 
-        {/* Bio */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-        >
-          {/* opening statement with drop-cap feel */}
+        {/* Right — statement + bio */}
+        <div>
           <p className="font-display text-2xl font-medium leading-snug tracking-tight sm:text-3xl">
-            I build AI-integrated web applications and real-time computer vision
-            systems that turn ambitious ideas into shipped products.
+            I build automation solutions, AI-integrated applications, and
+            cloud-native systems that turn ambitious ideas into shipped,
+            scalable products.
           </p>
 
           <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-muted-foreground">
-            {profile.bio.slice(1).map((p, i) => (
+            {profile.bio.map((p, i) => (
               <p key={i}>{p}</p>
             ))}
           </div>
+        </div>
+      </motion.div>
 
-          {/* stats — editorial index style */}
-          <div className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-sm border border-border/50 bg-border/50 sm:grid-cols-4">
-            {profile.stats.map((s) => (
-              <div key={s.label} className="bg-background p-4">
-                <div className="font-display text-3xl font-medium tracking-tight">
-                  <Counter value={s.value} suffix={s.suffix} />
-                </div>
-                <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground/70">
-                  {s.label}
-                </div>
-              </div>
-            ))}
+      {/* Stats — editorial index strip */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-80px" }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+        className="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-sm border border-border/50 bg-border/50 sm:grid-cols-4"
+      >
+        {profile.stats.map((s) => (
+          <div key={s.label} className="bg-background p-5">
+            <div className="font-display text-3xl font-medium tracking-tight sm:text-4xl">
+              <Counter value={s.value} suffix={s.suffix} />
+            </div>
+            <div className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground/70">
+              {s.label}
+            </div>
           </div>
-        </motion.div>
-      </div>
+        ))}
+      </motion.div>
     </section>
   );
 }

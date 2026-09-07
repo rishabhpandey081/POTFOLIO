@@ -1,62 +1,96 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
-import { ArrowUp, Heart } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 import { profile } from "@/lib/portfolio-data";
 
 export function Footer() {
   const year = new Date().getFullYear();
-  const toTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   return (
-    <footer className="mt-auto border-t border-border/40 bg-background/50">
-      <div className="mx-auto max-w-6xl px-6 py-12">
-        <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-          {/* Brand */}
-          <div className="flex items-center gap-3">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-primary/15 font-mono text-sm font-bold text-primary ring-1 ring-primary/30">
-              {profile.initials}
-            </span>
-            <div>
-              <div className="text-sm font-semibold">{profile.name}</div>
-              <div className="text-xs text-muted-foreground">
-                © {year} · Built with care
-              </div>
-            </div>
-          </div>
-
-          {/* Socials */}
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            {profile.socials.map((s) => (
-              <a
-                key={s.label}
-                href={s.href}
-                target={s.href.startsWith("http") ? "_blank" : undefined}
-                rel="noopener noreferrer"
-                className="rounded-full border border-border/50 px-3.5 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
-              >
-                {s.label}
-              </a>
-            ))}
-          </div>
-
-          {/* To top */}
-          <motion.button
-            whileHover={{ y: -2 }}
-            onClick={toTop}
-            className="inline-flex items-center gap-2 rounded-xl border border-border/60 px-4 py-2 text-xs font-medium transition-colors hover:bg-accent"
+    <footer className="mt-10 border-t border-border/50">
+      {/* Big links block */}
+      <div className="grid gap-10 py-16 md:grid-cols-[1fr_1fr] md:gap-16">
+        {/* Colophon */}
+        <div>
+          <h2 className="font-display text-4xl font-medium tracking-tight sm:text-5xl">
+            Let&apos;s build
+            <br />
+            something{" "}
+            <span className="text-primary">great</span>.
+          </h2>
+          <p className="mt-4 max-w-sm text-sm leading-relaxed text-muted-foreground">
+            Always open to internships, freelance work, and ambitious
+            collaborations.
+          </p>
+          <a
+            href={`mailto:${profile.email}`}
+            className="mt-6 inline-block font-display text-xl font-medium tracking-tight link-underline"
           >
-            Back to top
-            <ArrowUp className="h-3.5 w-3.5" />
-          </motion.button>
+            {profile.email}
+          </a>
         </div>
 
-        <div className="mt-8 flex items-center justify-center gap-1.5 text-[11px] text-muted-foreground">
-          <span>Designed & engineered by {profile.firstName}</span>
-          <Heart className="h-3 w-3 fill-primary text-primary" />
-          <span>· React Three Fiber · Next.js</span>
+        {/* Links index */}
+        <div className="grid grid-cols-2 gap-8">
+          <div>
+            <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">
+              Navigate
+            </p>
+            <ul className="space-y-2.5">
+              {[
+                { label: "About", href: "#about" },
+                { label: "Capabilities", href: "#skills" },
+                { label: "Work", href: "#work" },
+                { label: "Journey", href: "#journey" },
+                { label: "Contact", href: "#contact" },
+              ].map((l) => (
+                <li key={l.href}>
+                  <a
+                    href={l.href}
+                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground/70">
+              Connect
+            </p>
+            <ul className="space-y-2.5">
+              {profile.socials.map((s) => (
+                <li key={s.label}>
+                  <a
+                    href={s.href}
+                    target={s.href.startsWith("http") ? "_blank" : undefined}
+                    rel="noopener noreferrer"
+                    className="group inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {s.label}
+                    <ArrowUp className="h-3 w-3 -rotate-45 opacity-0 transition-opacity group-hover:opacity-100" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
+      </div>
+
+      {/* Bottom bar */}
+      <div className="flex flex-col-reverse items-center justify-between gap-4 border-t border-border/40 py-6 sm:flex-row">
+        <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground/60">
+          © {year} {profile.name} · Built in Delhi, India
+        </p>
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="group inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground/70 transition-colors hover:text-foreground"
+        >
+          Back to top
+          <ArrowUp className="h-3 w-3 transition-transform group-hover:-translate-y-0.5" />
+        </button>
       </div>
     </footer>
   );

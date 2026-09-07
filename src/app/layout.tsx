@@ -22,14 +22,15 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "Rishabh Pandey — Full-Stack & AI Engineer",
+  title: "Rishabh Pandey — Software Developer & Cloud Engineer",
   description:
-    "Portfolio of Rishabh Pandey, a B.Tech IT student and full-stack developer specializing in AI-integrated web applications, computer vision, and scalable React systems.",
+    "Portfolio of Rishabh Pandey, a software developer and cloud engineer specializing in automation solutions, AI-integrated applications, and scalable cloud systems.",
   keywords: [
     "Rishabh Pandey",
-    "Full-Stack Developer",
-    "AI Engineer",
-    "React.js",
+    "Software Developer",
+    "Cloud Engineer",
+    "Automation Solutions",
+    "AWS",
     "Java",
     "OpenCV",
     "Gemini API",
@@ -41,17 +42,17 @@ export const metadata: Metadata = {
     icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
   },
   openGraph: {
-    title: "Rishabh Pandey — Full-Stack & AI Engineer",
+    title: "Rishabh Pandey — Software Developer & Cloud Engineer",
     description:
-      "Building AI-integrated web applications and real-time computer vision systems.",
+      "Building automation solutions, AI-integrated applications, and scalable cloud systems.",
     siteName: "Rishabh Pandey",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Rishabh Pandey — Full-Stack & AI Engineer",
+    title: "Rishabh Pandey — Software Developer & Cloud Engineer",
     description:
-      "Building AI-integrated web applications and real-time computer vision systems.",
+      "Building automation solutions, AI-integrated applications, and scalable cloud systems.",
   },
 };
 

@@ -52,9 +52,9 @@ export function Hero() {
         className="mt-8 grid gap-8 border-t border-border/50 pt-8 md:grid-cols-[1.4fr_1fr]"
       >
         <p className="max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground sm:text-xl">
-          A full-stack developer & AI engineer crafting{" "}
-          <span className="text-foreground">AI-integrated web applications</span>{" "}
-          and real-time computer vision systems. Currently studying B.Tech IT in
+          A software developer & cloud engineer building{" "}
+          <span className="text-foreground">automation solutions</span>{" "}
+          and AI-integrated systems that scale. Currently studying B.Tech IT in
           Delhi, and shipping products that work — not just prototypes.
         </p>
         <div className="flex flex-col gap-3 md:items-end md:text-right">
@@ -62,7 +62,7 @@ export function Hero() {
             Focus
           </span>
           <div className="flex flex-wrap gap-2 md:justify-end">
-            {["Full-Stack", "Applied AI", "Computer Vision"].map((t) => (
+            {["Software", "Cloud", "Automation"].map((t) => (
               <span
                 key={t}
                 className="rounded-full border border-border/60 px-3 py-1 text-xs text-foreground/80"

@@ -3,35 +3,39 @@ export const profile = {
   firstName: "Rishabh",
   lastName: "Pandey",
   initials: "RP",
-  role: "Full-Stack & AI Engineer",
+  role: "Software Developer / Cloud Engineer",
   tagline:
-    "I build AI-integrated web applications and real-time computer vision systems that turn ambitious ideas into shipped products.",
+    "I build automation solutions, AI-integrated applications, and cloud-native systems that turn ambitious ideas into shipped, scalable products.",
   location: "Delhi, India",
   email: "pandeyrishabh889@gmail.com",
   phone: "+91 79826 26292",
   available: true,
   bio: [
-    "I'm a B.Tech Information Technology student and full-stack developer with a serious addiction to building things that actually work. My foundation is in Data Structures & Algorithms with Java, and I spend most of my time at the intersection of React, Node.js, and applied AI.",
-    "From architecting Virtus — an AI career-coaching platform powered by the Google Gemini API — to engineering AI Sentinel, a real-time OpenCV surveillance system, I care about the full lifecycle: clean architecture, thoughtful UX, and shipping to real users.",
-    "Currently open to SDE Intern roles where I can apply strong problem-solving and full-stack skills to meaningful problems.",
+    "I'm a B.Tech Information Technology student and a software developer focused on cloud engineering and automation solutions. My foundation is in Data Structures & Algorithms with Java, and I spend most of my time at the intersection of scalable backend systems, cloud infrastructure, and applied AI.",
+    "From architecting Virtus — an AI career-coaching platform powered by the Google Gemini API — to engineering AI Sentinel, a real-time OpenCV surveillance and attendance system, I care about the full lifecycle: clean architecture, reliable automation, and shipping to real users.",
+    "Currently open to SDE Intern roles where I can apply strong problem-solving, cloud, and automation skills to meaningful problems.",
   ],
   stats: [
-    { label: "LeetCode Problems", value: 61, suffix: "+" },
+    { label: "LeetCode Problems", value: 70, suffix: "+" },
     { label: "Projects Shipped", value: 3, suffix: "" },
     { label: "Certifications", value: 4, suffix: "" },
     { label: "Years Coding", value: 4, suffix: "+" },
   ],
   socials: [
-    { label: "GitHub", href: "https://github.com/rishabh", handle: "@rishabh" },
+    {
+      label: "GitHub",
+      href: "https://github.com/rishabhpandey081?tab=repositories",
+      handle: "@rishabhpandey081",
+    },
     {
       label: "LinkedIn",
-      href: "https://linkedin.com/in/rishabh",
-      handle: "/in/rishabh",
+      href: "https://www.linkedin.com/in/rishabh-pandey-515989300/",
+      handle: "rishabh-pandey",
     },
     {
       label: "LeetCode",
-      href: "https://leetcode.com/Rishabhpandey9086",
-      handle: "61 solved",
+      href: "https://leetcode.com/u/Rishabhpandey9086/",
+      handle: "70 solved",
     },
     { label: "Email", href: "mailto:pandeyrishabh889@gmail.com", handle: "Say hi" },
   ],
@@ -83,6 +87,7 @@ export type Project = {
   stack: string[];
   image: string;
   accent: string;
+  repo?: string;
   featured?: boolean;
 };
 
@@ -102,6 +107,7 @@ export const projects: Project[] = [
     stack: ["React.js", "Node.js", "Express.js", "Gemini API", "Tailwind CSS", "Web Speech API"],
     image: "/images/project-virtus.png",
     accent: "from-emerald-500/20 to-teal-500/10",
+    repo: "https://github.com/rishabhpandey081",
     featured: true,
   },
   {
@@ -119,6 +125,7 @@ export const projects: Project[] = [
     stack: ["Python", "OpenCV", "Haar Cascades", "LBPH", "MySQL"],
     image: "/images/project-sentinel.png",
     accent: "from-teal-500/20 to-emerald-500/10",
+    repo: "https://github.com/rishabhpandey081",
     featured: true,
   },
   {
@@ -135,6 +142,7 @@ export const projects: Project[] = [
     stack: ["Next.js", "React Three Fiber", "TypeScript", "Tailwind CSS", "Framer Motion"],
     image: "/images/project-portfolio.png",
     accent: "from-emerald-500/20 to-green-500/10",
+    repo: "https://github.com/rishabhpandey081",
   },
 ];
 
@@ -166,7 +174,7 @@ export const timeline: ExperienceItem[] = [
     org: "Data Structures & Algorithms",
     type: "coursework",
     description:
-      "Deepening algorithmic problem-solving — 61+ problems solved on LeetCode and counting.",
+      "Deepening algorithmic problem-solving — 70+ problems solved on LeetCode and counting.",
   },
   {
     period: "Qualifier",
