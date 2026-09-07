@@ -3,7 +3,7 @@
 import * as React from "react";
 import { motion, useInView, animate } from "framer-motion";
 import { profile } from "@/lib/portfolio-data";
-import { SectionHeading } from "@/components/section-heading";
+import { SectionLabel } from "@/components/section-label";
 
 function Counter({ value, suffix }: { value: number; suffix: string }) {
   const ref = React.useRef<HTMLSpanElement>(null);
@@ -21,7 +21,7 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
   }, [inView, value]);
 
   return (
-    <span ref={ref}>
+    <span ref={ref} className="tabular-nums">
       {display}
       {suffix}
     </span>
@@ -30,81 +30,64 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
 
 export function About() {
   return (
-    <section id="about" className="relative mx-auto max-w-6xl px-6 py-24 sm:py-32">
-      <SectionHeading
-        index="01 — About"
-        title="A developer who ships, not just prototypes."
-        description="Turning curiosity into code, and code into products people actually use."
-      />
+    <section id="about" className="relative py-24 sm:py-32">
+      <SectionLabel index="01" title="About" kicker="Profile" />
 
-      <div className="mt-14 grid items-start gap-12 lg:grid-cols-[0.85fr_1.15fr]">
-        {/* Avatar + card */}
+      <div className="grid gap-12 md:grid-cols-[0.85fr_1.15fr] md:gap-16">
+        {/* Portrait */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6 }}
           className="relative"
         >
-          <div className="relative mx-auto aspect-[4/5] w-full max-w-sm overflow-hidden rounded-3xl border border-border/60 bg-card">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-primary/5" />
+          <div className="relative aspect-[4/5] overflow-hidden rounded-sm border border-border/50">
             <img
               src="/images/avatar.png"
               alt="Portrait of Rishabh Pandey"
-              className="h-full w-full object-cover"
+              className="h-full w-full object-cover grayscale-[0.15] transition-all duration-700 hover:grayscale-0"
               loading="lazy"
             />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/90 to-transparent p-5">
-              <div className="flex items-center gap-2 text-sm font-semibold">
-                {profile.name}
-              </div>
-              <div className="text-xs text-muted-foreground">{profile.role}</div>
-            </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
           </div>
-          {/* floating badge */}
-          <motion.div
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -right-3 top-8 rounded-2xl border border-border/60 bg-background/80 px-4 py-3 backdrop-blur-md shadow-xl"
-          >
-            <div className="font-mono text-2xl font-bold text-primary">
-              <Counter value={61} suffix="+" />
-            </div>
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              LeetCode
-            </div>
-          </motion.div>
+          {/* caption strip */}
+          <div className="mt-3 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground/70">
+            <span>Fig. 01 — Portrait</span>
+            <span>2025</span>
+          </div>
         </motion.div>
 
-        {/* Bio + stats */}
+        {/* Bio */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6, delay: 0.1 }}
         >
-          <div className="space-y-5 text-base leading-relaxed text-muted-foreground">
-            {profile.bio.map((p, i) => (
+          {/* opening statement with drop-cap feel */}
+          <p className="font-display text-2xl font-medium leading-snug tracking-tight sm:text-3xl">
+            I build AI-integrated web applications and real-time computer vision
+            systems that turn ambitious ideas into shipped products.
+          </p>
+
+          <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-muted-foreground">
+            {profile.bio.slice(1).map((p, i) => (
               <p key={i}>{p}</p>
             ))}
           </div>
 
-          {/* Stats grid */}
-          <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {profile.stats.map((s, i) => (
-              <motion.div
-                key={s.label}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-60px" }}
-                transition={{ duration: 0.5, delay: i * 0.08 }}
-                className="rounded-2xl border border-border/50 bg-card/50 p-4"
-              >
-                <div className="font-mono text-2xl font-bold text-foreground sm:text-3xl">
+          {/* stats — editorial index style */}
+          <div className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-sm border border-border/50 bg-border/50 sm:grid-cols-4">
+            {profile.stats.map((s) => (
+              <div key={s.label} className="bg-background p-4">
+                <div className="font-display text-3xl font-medium tracking-tight">
                   <Counter value={s.value} suffix={s.suffix} />
                 </div>
-                <div className="mt-1 text-xs text-muted-foreground">{s.label}</div>
-              </motion.div>
+                <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground/70">
+                  {s.label}
+                </div>
+              </div>
             ))}
           </div>
         </motion.div>

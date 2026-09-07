@@ -1,155 +1,121 @@
 "use client";
 
 import * as React from "react";
-import dynamic from "next/dynamic";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowDown, MapPin, Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowDown } from "lucide-react";
 import { profile } from "@/lib/portfolio-data";
-import { MagneticButton } from "@/components/magnetic-button";
-
-const HeroScene = dynamic(
-  () => import("@/components/three/hero-scene").then((m) => m.HeroScene),
-  { ssr: false, loading: () => null }
-);
+import { VoiceIntroPlayer } from "@/components/voice-player";
+import { ButtonPrimary } from "@/components/editorial-buttons";
 
 export function Hero() {
-  const containerRef = React.useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"],
-  });
-  const y = useTransform(scrollYProgress, [0, 1], [0, 120]);
-  const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
-  const sceneScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
-
   const go = (href: string) =>
     document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
 
   return (
-    <section
-      ref={containerRef}
-      className="relative flex min-h-screen items-center justify-center overflow-hidden pt-24"
-    >
-      {/* 3D scene layer */}
+    <section className="relative flex min-h-screen flex-col justify-center overflow-hidden py-20">
+      {/* subtle ambient backdrop */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-40 top-1/4 h-[60vh] w-[60vh] rounded-full bg-primary/[0.07] blur-[140px] animate-ambient"
+      />
+
+      {/* section index */}
       <motion.div
-        style={{ scale: sceneScale }}
-        className="pointer-events-none absolute inset-0 z-0"
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="mb-8 flex items-center gap-4 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground"
       >
-        <div className="absolute left-1/2 top-1/2 h-[min(78vh,720px)] w-[min(78vh,720px)] -translate-x-1/2 -translate-y-1/2 opacity-90">
-          <HeroScene />
+        <span>00 — Introduction</span>
+        <span className="h-px flex-1 bg-border/60" />
+        <span className="hidden sm:inline">{profile.location}</span>
+      </motion.div>
+
+      {/* Display name */}
+      <motion.h1
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.1 }}
+        className="font-display text-[clamp(3rem,11vw,8.5rem)] font-medium leading-[0.92] tracking-tight"
+      >
+        Rishabh
+        <br />
+        <span className="text-primary">Pandey</span>
+        <span className="text-primary">.</span>
+      </motion.h1>
+
+      {/* Role + descriptor row */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.25 }}
+        className="mt-8 grid gap-8 border-t border-border/50 pt-8 md:grid-cols-[1.4fr_1fr]"
+      >
+        <p className="max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground sm:text-xl">
+          A full-stack developer & AI engineer crafting{" "}
+          <span className="text-foreground">AI-integrated web applications</span>{" "}
+          and real-time computer vision systems. Currently studying B.Tech IT in
+          Delhi, and shipping products that work — not just prototypes.
+        </p>
+        <div className="flex flex-col gap-3 md:items-end md:text-right">
+          <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground/70">
+            Focus
+          </span>
+          <div className="flex flex-wrap gap-2 md:justify-end">
+            {["Full-Stack", "Applied AI", "Computer Vision"].map((t) => (
+              <span
+                key={t}
+                className="rounded-full border border-border/60 px-3 py-1 text-xs text-foreground/80"
+              >
+                {t}
+              </span>
+            ))}
+          </div>
         </div>
       </motion.div>
 
-      {/* Radial glow backdrop */}
-      <div
-        aria-hidden
-        className="absolute left-1/2 top-1/2 -z-10 h-[60vh] w-[60vh] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/20 blur-[120px] animate-glow"
-      />
-
+      {/* Voice intro + CTAs */}
       <motion.div
-        style={{ y, opacity }}
-        className="relative z-10 mx-auto flex max-w-5xl flex-col items-center px-6 text-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, delay: 0.4 }}
+        className="mt-12 flex flex-col gap-6"
       >
-        {/* availability pill */}
-        <motion.button
-          onClick={() => go("#contact")}
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="group mb-8 inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/50 px-4 py-1.5 text-xs font-medium backdrop-blur-md"
-        >
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
-          </span>
-          Available for SDE Intern roles
-          <Sparkles className="h-3 w-3 text-primary" />
-        </motion.button>
-
-        {/* Name */}
-        <motion.h1
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.2 }}
-          className="text-balance text-5xl font-bold leading-[0.95] tracking-tight sm:text-7xl md:text-8xl"
-        >
-          <span className="block">Rishabh</span>
-          <span className="block text-gradient">Pandey</span>
-        </motion.h1>
-
-        {/* Role */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.35 }}
-          className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 font-mono text-sm uppercase tracking-[0.2em] text-muted-foreground sm:text-base"
-        >
-          <span>Full-Stack</span>
-          <span className="h-1 w-1 rounded-full bg-primary" />
-          <span>AI Engineer</span>
-          <span className="h-1 w-1 rounded-full bg-primary" />
-          <span>CS Undergrad</span>
-        </motion.div>
-
-        {/* Tagline */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.5 }}
-          className="mx-auto mt-7 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg"
-        >
-          {profile.tagline}
-        </motion.p>
-
-        {/* CTAs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.65 }}
-          className="mt-9 flex flex-wrap items-center justify-center gap-3"
-        >
-          <MagneticButton as="button" onClick={() => go("#work")} strength={0.4}>
-            <span className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 transition-shadow hover:shadow-xl hover:shadow-primary/30">
-              View my work
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-primary">
+              ✦ Voice introduction
             </span>
-          </MagneticButton>
-          <MagneticButton as="button" onClick={() => go("#contact")} strength={0.4}>
-            <span className="inline-flex items-center gap-2 rounded-xl border border-border/70 bg-background/50 px-6 py-3 text-sm font-semibold backdrop-blur-md transition-colors hover:bg-accent">
-              Get in touch
-            </span>
-          </MagneticButton>
-        </motion.div>
+            <span className="h-px flex-1 bg-border/40" />
+          </div>
+          <div className="max-w-xl">
+            <VoiceIntroPlayer src="/audio/intro.wav" />
+          </div>
+        </div>
 
-        {/* Location */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.7, delay: 0.85 }}
-          className="mt-10 flex items-center gap-1.5 text-xs text-muted-foreground"
-        >
-          <MapPin className="h-3.5 w-3.5" />
-          {profile.location}
-        </motion.div>
+        <div className="flex flex-wrap items-center gap-6 pt-2">
+          <ButtonPrimary onClick={() => go("#work")}>View selected work</ButtonPrimary>
+          <ButtonPrimary onClick={() => go("#contact")} arrow={false}>
+            Get in touch
+          </ButtonPrimary>
+        </div>
       </motion.div>
 
       {/* Scroll cue */}
       <motion.button
         onClick={() => go("#about")}
-        style={{ opacity }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.1, duration: 0.8 }}
-        className="absolute bottom-7 left-1/2 z-10 -translate-x-1/2"
-        aria-label="Scroll down"
+        transition={{ delay: 1, duration: 0.8 }}
+        className="absolute bottom-6 left-0 hidden items-center gap-2 font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground/70 transition-colors hover:text-foreground md:flex"
       >
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
+        <motion.span
+          animate={{ y: [0, 4, 0] }}
           transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-          className="flex flex-col items-center gap-2 text-muted-foreground"
         >
-          <span className="font-mono text-[10px] uppercase tracking-[0.3em]">Scroll</span>
-          <ArrowDown className="h-4 w-4" />
-        </motion.div>
+          <ArrowDown className="h-3.5 w-3.5" />
+        </motion.span>
+        Scroll to read
       </motion.button>
     </section>
   );
