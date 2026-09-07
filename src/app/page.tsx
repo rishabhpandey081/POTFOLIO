@@ -1,5 +1,6 @@
 import { Masthead } from "@/components/masthead";
 import { Hero } from "@/components/sections/hero";
+import { MotionWords } from "@/components/sections/motion-words";
 import { About } from "@/components/sections/about";
 import { Skills } from "@/components/sections/skills";
 import { Projects } from "@/components/sections/projects";
@@ -13,6 +14,7 @@ export default function Home() {
       <div className="grain-overlay" aria-hidden />
       <Masthead>
         <Hero />
+        <MotionWords />
         <About />
         <Skills />
         <Projects />
