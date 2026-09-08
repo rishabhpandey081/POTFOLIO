@@ -5,121 +5,134 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   Float,
   Environment,
-  MeshDistortMaterial,
-  Icosahedron,
   AdaptiveDpr,
   Sparkles,
+  ContactShadows,
 } from "@react-three/drei";
-import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
+import { EffectComposer, Bloom, Vignette, ChromaticAberration } from "@react-three/postprocessing";
+import { BlendFunction } from "postprocessing";
 import * as THREE from "three";
 
-function CrystalCore() {
+function CrystalKnot() {
   const mesh = React.useRef<THREE.Mesh>(null);
+  const { pointer } = useThree();
 
   useFrame((state, delta) => {
     if (!mesh.current) return;
-    mesh.current.rotation.y += delta * 0.12;
-    mesh.current.rotation.x += delta * 0.04;
+    mesh.current.rotation.y += delta * 0.15;
+    mesh.current.rotation.x += delta * 0.05;
   });
 
   return (
-    <Float speed={1.4} rotationIntensity={0.4} floatIntensity={0.9}>
-      <Icosahedron ref={mesh} args={[1.35, 4]}>
-        <MeshDistortMaterial
-          color={"#10b981"}
-          emissive={"#042f2e"}
-          emissiveIntensity={0.6}
-          roughness={0.12}
-          metalness={0.85}
-          distort={0.32}
-          speed={1.6}
-          envMapIntensity={1.1}
+    <Float speed={1.2} rotationIntensity={0.3} floatIntensity={0.8}>
+      {/* Main crystal — metallic emerald with strong emissive */}
+      <mesh ref={mesh} scale={1.5}>
+        <torusKnotGeometry args={[1, 0.3, 200, 32]} />
+        <meshStandardMaterial
+          color="#10b981"
+          emissive="#10b981"
+          emissiveIntensity={0.4}
+          roughness={0.1}
+          metalness={0.9}
+          envMapIntensity={1.5}
         />
-      </Icosahedron>
-    </Float>
-  );
-}
-
-function WireShell() {
-  const ref = React.useRef<THREE.Mesh>(null);
-  useFrame((_, delta) => {
-    if (!ref.current) return;
-    ref.current.rotation.y -= delta * 0.08;
-    ref.current.rotation.z += delta * 0.03;
-  });
-  return (
-    <Float speed={0.8} rotationIntensity={0.2} floatIntensity={0.5}>
-      <mesh ref={ref} scale={2.35}>
-        <icosahedronGeometry args={[1, 1]} />
-        <meshBasicMaterial color={"#34d399"} wireframe transparent opacity={0.18} />
+      </mesh>
+      {/* Inner glowing core */}
+      <mesh scale={0.8}>
+        <torusKnotGeometry args={[1, 0.35, 100, 16]} />
+        <meshBasicMaterial color="#6ee7b7" transparent opacity={0.3} wireframe />
       </mesh>
     </Float>
   );
 }
 
-function OrbitingNode({
-  radius,
-  speed,
-  offset,
-  size,
+function GlowOrb({
+  position,
   color,
+  size = 0.15,
 }: {
-  radius: number;
-  speed: number;
-  offset: number;
-  size: number;
+  position: [number, number, number];
   color: string;
+  size?: number;
 }) {
   const ref = React.useRef<THREE.Mesh>(null);
   useFrame((state) => {
     if (!ref.current) return;
-    const t = state.clock.elapsedTime * speed + offset;
+    const t = state.clock.elapsedTime;
     ref.current.position.set(
-      Math.cos(t) * radius,
-      Math.sin(t * 1.3) * radius * 0.35,
-      Math.sin(t) * radius
+      position[0] + Math.sin(t * 0.5) * 0.3,
+      position[1] + Math.cos(t * 0.7) * 0.2,
+      position[2] + Math.sin(t * 0.3) * 0.3
     );
   });
   return (
-    <mesh ref={ref}>
-      <sphereGeometry args={[size, 24, 24]} />
+    <mesh ref={ref} position={position}>
+      <sphereGeometry args={[size, 32, 32]} />
       <meshStandardMaterial
         color={color}
         emissive={color}
-        emissiveIntensity={2.2}
-        roughness={0.3}
-        metalness={0.4}
+        emissiveIntensity={3}
+        roughness={0.2}
+        metalness={0.8}
       />
     </mesh>
   );
 }
 
+function Rig() {
+  const { camera, pointer } = useThree();
+  const vec = React.useRef(new THREE.Vector3());
+  useFrame(() => {
+    vec.current.set(pointer.x * 1.2, pointer.y * 0.8 + 0.3, 6);
+    camera.position.lerp(vec.current, 0.04);
+    camera.lookAt(0, 0, 0);
+  });
+  return null;
+}
+
 function SceneContent() {
   return (
     <>
-      <ambientLight intensity={0.35} />
-      <directionalLight position={[4, 6, 4]} intensity={1.2} color={"#a7f3d0"} />
-      <pointLight position={[-5, -3, -4]} intensity={2.4} color={"#10b981"} />
-      <pointLight position={[5, 4, 3]} intensity={1.6} color={"#5eead4"} />
+      <ambientLight intensity={0.2} />
+      <spotLight position={[5, 8, 5]} angle={0.3} penumbra={1} intensity={3} color="#6ee7b7" castShadow />
+      <pointLight position={[-6, -2, -4]} intensity={3} color="#10b981" />
+      <pointLight position={[6, 4, 3]} intensity={2} color="#5eead4" />
+      <directionalLight position={[0, 5, 5]} intensity={0.5} color="#a7f3d0" />
 
-      <CrystalCore />
-      <WireShell />
+      <CrystalKnot />
 
-      <OrbitingNode radius={2.6} speed={0.6} offset={0} size={0.07} color="#34d399" />
-      <OrbitingNode radius={3.1} speed={0.45} offset={2.1} size={0.05} color="#5eead4" />
-      <OrbitingNode radius={2.2} speed={0.8} offset={4.0} size={0.06} color="#6ee7b7" />
+      <GlowOrb position={[2.5, 1, -1]} color="#34d399" size={0.12} />
+      <GlowOrb position={[-2.8, -0.5, 0.5]} color="#5eead4" size={0.09} />
+      <GlowOrb position={[1.5, -1.5, 1]} color="#6ee7b7" size={0.1} />
 
-      <Sparkles count={80} scale={9} size={2} speed={0.3} opacity={0.5} color="#6ee7b7" />
+      <Sparkles count={120} scale={12} size={3} speed={0.4} opacity={0.6} color="#6ee7b7" />
 
-      <Environment preset="city" />
+      <ContactShadows
+        position={[0, -2.5, 0]}
+        opacity={0.3}
+        scale={10}
+        blur={2.5}
+        far={4}
+        color="#10b981"
+      />
+
+      <Environment preset="night" />
+      <Rig />
       <EffectComposer multisampling={4}>
         <Bloom
-          intensity={0.9}
-          luminanceThreshold={0.25}
+          intensity={1.1}
+          luminanceThreshold={0.2}
           luminanceSmoothing={0.9}
           mipmapBlur
+          radius={0.8}
         />
-        <Vignette eskil={false} offset={0.2} darkness={0.65} />
+        <ChromaticAberration
+          blendFunction={BlendFunction.NORMAL}
+          offset={[0.0008, 0.0008]}
+          radialModulation={false}
+          modulationOffset={0}
+        />
+        <Vignette eskil={false} offset={0.15} darkness={0.7} />
       </EffectComposer>
       <AdaptiveDpr pixelated />
     </>
@@ -131,7 +144,7 @@ export function HeroScene() {
     <Canvas
       dpr={[1, 2]}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-      camera={{ position: [0, 0, 6], fov: 42 }}
+      camera={{ position: [0, 0.3, 6], fov: 40 }}
       style={{ width: "100%", height: "100%" }}
     >
       <SceneContent />

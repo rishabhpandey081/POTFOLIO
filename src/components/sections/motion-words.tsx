@@ -31,7 +31,7 @@ export function MotionWords() {
       />
 
       {/* Center stage — rotating hero word */}
-      <div className="relative mx-auto mb-16 max-w-4xl px-6 text-center">
+      <div className="relative mx-auto mb-16 max-w-5xl px-6 text-center">
         <motion.p
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}

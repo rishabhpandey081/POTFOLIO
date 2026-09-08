@@ -3,10 +3,9 @@
 import * as React from "react";
 import dynamic from "next/dynamic";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, MapPin } from "lucide-react";
 import { profile } from "@/lib/portfolio-data";
 import { VoiceIntroPlayer } from "@/components/voice-player";
-import { ButtonPrimary } from "@/components/editorial-buttons";
 
 const HeroScene = dynamic(
   () => import("@/components/three/hero-scene").then((m) => m.HeroScene),
@@ -19,10 +18,9 @@ export function Hero() {
     target: containerRef,
     offset: ["start start", "end start"],
   });
-  const textY = useTransform(scrollYProgress, [0, 1], [0, 100]);
-  const textOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-  const sceneScale = useTransform(scrollYProgress, [0, 1], [1, 1.2]);
-  const sceneOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const textY = useTransform(scrollYProgress, [0, 1], [0, 120]);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.65], [1, 0]);
+  const sceneScale = useTransform(scrollYProgress, [0, 1], [1, 1.25]);
 
   const go = (href: string) =>
     document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
@@ -30,124 +28,132 @@ export function Hero() {
   return (
     <section
       ref={containerRef}
-      className="relative flex min-h-screen flex-col justify-center overflow-hidden py-20"
+      className="relative flex min-h-screen items-center justify-center overflow-hidden"
     >
-      {/* 3D scene — full background */}
-      <motion.div
-        style={{ scale: sceneScale, opacity: sceneOpacity }}
-        className="pointer-events-none absolute inset-0 z-0"
-      >
+      {/* 3D scene background */}
+      <motion.div style={{ scale: sceneScale }} className="absolute inset-0 z-0">
         <HeroScene />
       </motion.div>
 
-      {/* gradient overlay for text legibility */}
-      <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-background/40 via-transparent to-background/60" />
+      {/* gradient vignette for legibility */}
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-background/30 via-transparent to-background/70" />
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_center,transparent_30%,background_100%)]" />
 
-      {/* Content overlay */}
+      {/* Content */}
       <motion.div
         style={{ y: textY, opacity: textOpacity }}
-        className="relative z-10"
+        className="relative z-10 mx-auto max-w-5xl px-6 text-center"
       >
-        {/* section index */}
+        {/* Availability badge */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-8 flex items-center gap-4 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground"
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="mb-8 flex justify-center"
         >
-          <span>00 — Introduction</span>
-          <span className="h-px flex-1 bg-border/60" />
-          <span className="hidden sm:inline">{profile.location}</span>
+          <div className="flex items-center gap-2.5 rounded-full border border-border/40 bg-background/30 px-4 py-1.5 backdrop-blur-md">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+            </span>
+            <span className="text-xs text-foreground/80">
+              Available for SDE internships
+            </span>
+          </div>
         </motion.div>
 
-        {/* Display name */}
+        {/* Name */}
         <motion.h1
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-          className="font-display text-[clamp(3rem,11vw,8.5rem)] font-medium leading-[0.92] tracking-tight"
+          transition={{ duration: 0.9, delay: 0.4 }}
+          className="font-display text-[clamp(3.5rem,12vw,9rem)] font-medium leading-[0.9] tracking-tight"
         >
           Rishabh
           <br />
           <span className="text-primary">Pandey</span>
-          <span className="text-primary">.</span>
         </motion.h1>
 
-        {/* Role + descriptor row */}
+        {/* Role */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.25 }}
-          className="mt-8 grid gap-8 border-t border-border/50 pt-8 md:grid-cols-[1.4fr_1fr]"
+          transition={{ duration: 0.8, delay: 0.55 }}
+          className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground sm:text-sm"
         >
-          <p className="max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground sm:text-xl">
-            A software developer & cloud engineer building{" "}
-            <span className="text-foreground">automation solutions</span>{" "}
-            and AI-integrated systems that scale. Currently studying B.Tech IT
-            in Delhi, and shipping products that work — not just prototypes.
-          </p>
-          <div className="flex flex-col gap-3 md:items-end md:text-right">
-            <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground/70">
-              Focus
-            </span>
-            <div className="flex flex-wrap gap-2 md:justify-end">
-              {["Software", "Cloud", "Automation"].map((t) => (
-                <span
-                  key={t}
-                  className="rounded-full border border-border/60 bg-background/30 px-3 py-1 text-xs text-foreground/80 backdrop-blur-sm"
-                >
-                  {t}
-                </span>
-              ))}
-            </div>
-          </div>
+          <span>Software Developer</span>
+          <span className="h-1 w-1 rounded-full bg-primary" />
+          <span>Cloud Engineer</span>
+          <span className="h-1 w-1 rounded-full bg-primary" />
+          <span>Automation</span>
         </motion.div>
 
-        {/* Voice intro + CTAs */}
+        {/* Voice intro — glassmorphic */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="mt-12 flex flex-col gap-6"
+          transition={{ duration: 0.8, delay: 0.7 }}
+          className="mx-auto mt-10 max-w-xl"
         >
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-3">
-              <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-primary">
-                ✦ Voice introduction
-              </span>
-              <span className="h-px flex-1 bg-border/40" />
-            </div>
-            <div className="max-w-xl">
-              <VoiceIntroPlayer src="/audio/intro.wav" />
-            </div>
+          <div className="mb-3 flex items-center justify-center gap-3">
+            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-primary">
+              ✦ Voice introduction
+            </span>
           </div>
+          <VoiceIntroPlayer src="/audio/intro.wav" />
+        </motion.div>
 
-          <div className="flex flex-wrap items-center gap-6 pt-2">
-            <ButtonPrimary onClick={() => go("#work")}>View selected work</ButtonPrimary>
-            <ButtonPrimary onClick={() => go("#contact")} arrow={false}>
-              Get in touch
-            </ButtonPrimary>
-          </div>
+        {/* CTAs */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.85 }}
+          className="mt-8 flex flex-wrap items-center justify-center gap-4"
+        >
+          <button
+            onClick={() => go("#work")}
+            className="group inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-medium text-background transition-transform hover:scale-105"
+          >
+            View selected work
+            <ArrowDown className="h-3.5 w-3.5 transition-transform group-hover:translate-y-0.5" />
+          </button>
+          <button
+            onClick={() => go("#contact")}
+            className="inline-flex items-center gap-2 rounded-full border border-border/50 bg-background/30 px-6 py-3 text-sm font-medium backdrop-blur-md transition-colors hover:bg-foreground/5"
+          >
+            Get in touch
+          </button>
+        </motion.div>
+
+        {/* Location */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 0.8 }}
+          className="mt-10 flex items-center justify-center gap-1.5 text-xs text-muted-foreground"
+        >
+          <MapPin className="h-3 w-3" />
+          {profile.location}
         </motion.div>
       </motion.div>
 
       {/* Scroll cue */}
-      <motion.button
-        onClick={() => go("#about")}
+      <motion.div
         style={{ opacity: textOpacity }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1, duration: 0.8 }}
-        className="absolute bottom-6 left-0 hidden items-center gap-2 font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground/70 transition-colors hover:text-foreground md:flex"
+        transition={{ delay: 1.2, duration: 0.8 }}
+        className="absolute bottom-6 left-1/2 -translate-x-1/2"
       >
-        <motion.span
-          animate={{ y: [0, 4, 0] }}
+        <motion.div
+          animate={{ y: [0, 6, 0] }}
           transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          className="flex flex-col items-center gap-2 text-muted-foreground"
         >
-          <ArrowDown className="h-3.5 w-3.5" />
-        </motion.span>
-        Scroll to read
-      </motion.button>
+          <span className="font-mono text-[10px] uppercase tracking-[0.3em]">Scroll</span>
+          <div className="h-8 w-px bg-gradient-to-b from-primary/60 to-transparent" />
+        </motion.div>
+      </motion.div>
     </section>
   );
 }
