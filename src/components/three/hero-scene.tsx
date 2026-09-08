@@ -105,7 +105,7 @@ function SceneContent() {
       <GlowOrb position={[-2.8, -0.5, 0.5]} color="#5eead4" size={0.09} />
       <GlowOrb position={[1.5, -1.5, 1]} color="#6ee7b7" size={0.1} />
 
-      <Sparkles count={120} scale={12} size={3} speed={0.4} opacity={0.6} color="#6ee7b7" />
+      <Sparkles count={60} scale={10} size={2} speed={0.3} opacity={0.5} color="#6ee7b7" />
 
       <ContactShadows
         position={[0, -2.5, 0]}
@@ -142,8 +142,12 @@ function SceneContent() {
 export function HeroScene() {
   return (
     <Canvas
-      dpr={[1, 2]}
-      gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+      dpr={[1, 1.5]}
+      gl={{
+        antialias: true,
+        alpha: true,
+        powerPreference: "high-performance",
+      }}
       camera={{ position: [0, 0.3, 6], fov: 40 }}
       style={{ width: "100%", height: "100%" }}
     >

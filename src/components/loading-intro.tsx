@@ -7,7 +7,9 @@ export function LoadingIntro() {
   const [done, setDone] = React.useState(false);
 
   React.useEffect(() => {
-    const t = setTimeout(() => setDone(true), 2200);
+    // Shorter on mobile for faster access
+    const isMobile = window.innerWidth < 768;
+    const t = setTimeout(() => setDone(true), isMobile ? 1200 : 2000);
     return () => clearTimeout(t);
   }, []);
 

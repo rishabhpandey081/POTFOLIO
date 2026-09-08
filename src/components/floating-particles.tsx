@@ -1,11 +1,11 @@
 "use client";
 
 import * as React from "react";
-import dynamic from "next/dynamic";
+import { useIsDesktop } from "@/hooks/use-device-capability";
 
-// Lightweight floating particle field using CSS 3D — no WebGL overhead
-// Adds spatial depth to section backgrounds
-const PARTICLES = Array.from({ length: 24 }, (_, i) => ({
+// Floating particle field using CSS — adds spatial depth.
+// Count and opacity adapt to device capability for performance.
+const ALL_PARTICLES = Array.from({ length: 24 }, (_, i) => ({
   id: i,
   left: (i * 53) % 100,
   top: (i * 37) % 100,
@@ -15,12 +15,16 @@ const PARTICLES = Array.from({ length: 24 }, (_, i) => ({
 }));
 
 export function FloatingParticles({ className }: { className?: string }) {
+  const isDesktop = useIsDesktop();
+  // Reduce particle count on mobile for performance
+  const particles = isDesktop ? ALL_PARTICLES : ALL_PARTICLES.slice(0, 10);
+
   return (
     <div
       className={`pointer-events-none absolute inset-0 overflow-hidden ${className ?? ""}`}
       aria-hidden
     >
-      {PARTICLES.map((p) => (
+      {particles.map((p) => (
         <span
           key={p.id}
           className="absolute rounded-full bg-primary/30 blur-[1px]"

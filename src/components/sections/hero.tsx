@@ -6,14 +6,17 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowDown, MapPin } from "lucide-react";
 import { profile } from "@/lib/portfolio-data";
 import { VoiceIntroPlayer } from "@/components/voice-player";
+import { HeroFallback } from "@/components/three/hero-fallback";
+import { useDeviceCapability } from "@/hooks/use-device-capability";
 
 const HeroScene = dynamic(
   () => import("@/components/three/hero-scene").then((m) => m.HeroScene),
-  { ssr: false, loading: () => null }
+  { ssr: false, loading: () => <HeroFallback /> }
 );
 
 export function Hero() {
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const capable = useDeviceCapability();
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"],
@@ -30,9 +33,9 @@ export function Hero() {
       ref={containerRef}
       className="relative flex min-h-screen items-center justify-center overflow-hidden"
     >
-      {/* 3D scene background */}
+      {/* 3D scene background (desktop) or CSS fallback (mobile) */}
       <motion.div style={{ scale: sceneScale }} className="absolute inset-0 z-0">
-        <HeroScene />
+        {capable ? <HeroScene /> : <HeroFallback />}
       </motion.div>
 
       {/* gradient vignette for legibility */}

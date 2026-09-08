@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { projects } from "@/lib/portfolio-data";
 import { FloatingParticles } from "@/components/floating-particles";
+import { useIsDesktop } from "@/hooks/use-device-capability";
 
 function SectionLabel({ index, title }: { index: string; title: string }) {
   return (
@@ -61,8 +62,10 @@ function ProjectCard({
 }) {
   const cardRef = React.useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = React.useState({ rx: 0, ry: 0, mx: 50, my: 50 });
+  const isDesktop = useIsDesktop();
 
   const handleMove = (e: React.MouseEvent) => {
+    if (!isDesktop) return;
     const el = cardRef.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
@@ -96,8 +99,8 @@ function ProjectCard({
         onMouseLeave={reset}
         className="relative grid overflow-hidden rounded-3xl border border-border/40 bg-card/30 backdrop-blur-md transition-all duration-300 hover:border-primary/40 md:grid-cols-2"
         style={{
-          transform: `rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)`,
-          transformStyle: "preserve-3d",
+          transform: isDesktop ? `rotateX(${tilt.rx}deg) rotateY(${tilt.ry}deg)` : undefined,
+          transformStyle: isDesktop ? "preserve-3d" : undefined,
           transition: "transform 0.2s ease-out",
         }}
       >
@@ -118,8 +121,11 @@ function ProjectCard({
           <img
             src={p.image}
             alt={p.title}
+            width={800}
+            height={500}
             className="relative h-full w-full object-cover transition-transform duration-[1.2s] ease-out group-hover:scale-105"
             loading="lazy"
+            decoding="async"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
           <span className="absolute left-3 top-3 rounded-full bg-background/50 px-2.5 py-1 font-mono text-[10px] tabular-nums text-foreground/80 backdrop-blur-sm">

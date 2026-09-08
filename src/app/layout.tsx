@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
@@ -20,6 +20,16 @@ const fraunces = Fraunces({
   axes: ["opsz", "SOFT"],
   display: "swap",
 });
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#0a0d0c" },
+    { media: "(prefers-color-scheme: light)", color: "#f5f3ef" },
+  ],
+};
 
 export const metadata: Metadata = {
   title: "Rishabh Pandey — Software Developer & Cloud Engineer",

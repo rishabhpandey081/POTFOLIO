@@ -112,3 +112,29 @@ Stage Summary:
 - Floating glass navbar, cinematic 3D hero, glassmorphic sections throughout
 - Premium loading intro, scroll-driven parallax, custom cursor
 - All content retained (voice intro, projects, correct links, LeetCode 70+, Software/Cloud/Automation role)
+
+---
+Task ID: 5
+Agent: main
+Task: Optimize website for mobile and desktop performance.
+
+Work Log:
+- Created useDeviceCapability hook — detects mobile width (<768px), prefers-reduced-motion, save-data
+- Created useIsDesktop hook for responsive component logic
+- Built HeroFallback: lightweight CSS-only animated gradient orb with orbiting dots (replaces WebGL on mobile)
+- Hero now conditionally loads: WebGL HeroScene on desktop, CSS HeroFallback on mobile
+- Reduced 3D scene DPR from [1,2] to [1,1.5] and sparkles from 120 to 60 for performance
+- FloatingParticles: 24 particles on desktop, 10 on mobile
+- Project tilt cards: 3D tilt disabled on mobile (transform/transformStyle only applied when isDesktop)
+- LoadingIntro: 1.2s on mobile, 2.0s on desktop (faster access on mobile)
+- Added prefers-reduced-motion media query (disables all animations for accessibility)
+- Added image width/height + decoding="async" to project images (prevents layout shift)
+- Added Viewport export with themeColor (dark/light) to layout
+- Configured next.config: image formats (avif/webp), optimizePackageImports for lucide-react/drei/postprocessing
+- Verified: desktop canvas renders, mobile uses fallback, no overflow, no errors, VLM confirmed GOOD on both
+
+Stage Summary:
+- Mobile: no WebGL overhead, CSS gradient orb fallback, fewer particles, no tilt jank, shorter loading
+- Desktop: retained full 3D experience with minor perf optimizations
+- Accessibility: respects prefers-reduced-motion and save-data
+- Both breakpoints verified GOOD by VLM, no horizontal overflow, proper touch targets

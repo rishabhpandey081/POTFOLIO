@@ -239,6 +239,28 @@
   animation: ambient 18s ease-in-out infinite;
 }
 
+/* Mobile hero orbit animations */
+@keyframes orbit1 {
+  0% { transform: translate(-50%, -50%) rotate(0deg) translateX(28vw) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg) translateX(28vw) rotate(-360deg); }
+}
+@keyframes orbit2 {
+  0% { transform: translate(-50%, -50%) rotate(0deg) translateX(40vw) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(-360deg) translateX(40vw) rotate(360deg); }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* Underline grow for editorial links */
 .link-underline {
   position: relative;
