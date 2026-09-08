@@ -63,3 +63,27 @@ Stage Summary:
 - All links corrected and prominently displayed in footer
 - Portrait removed; LeetCode updated to 70+
 - Role rebranded to Software Developer / Cloud Engineer with automation focus
+
+---
+Task ID: 3
+Agent: main
+Task: Fix "1 issue" hydration warning, rebuild motion words as eye-catching rotating showcase, add 3D depth.
+
+Work Log:
+- Fixed hydration mismatch in VoicePlayer (floating-point height values → precomputed rounded integers)
+- Rebuilt MotionWords: "I am [ROTATING WORD]" with emerald glow, blur-in transition, scrolling marquee below
+- Rotating word cycles: Problem Solving, Disciplined, Creative Thinking, Adaptable, Reliable, Collaborative, Analytical, Detail-Oriented
+- Simplified to keyed motion.span (no AnimatePresence exit-delay issues) — word always visible at opacity 1
+- 3D hero: WebGL crystal scene (R3F) full-background with bloom, parallax scroll, gradient overlay for legibility
+- 3D project cards: cursor-tracking tilt (rotateX/rotateY), cursor-following radial glow, translateZ depth on image+content
+- Floating particles (24 count, primary/30 opacity) on About, Journey, Contact sections for spatial depth
+- Parallax scroll on About content
+- Custom magnetic cursor active site-wide
+- Ambient emerald glow background strengthened
+- Verified: no console errors, no "1 issue" badge, canvas renders, voice plays, tilt transforms on hover, particles present
+
+Stage Summary:
+- Site now has genuine 3D depth: WebGL hero, tilt cards, particles, parallax, custom cursor
+- Motion words are eye-catching: large emerald rotating word with glow + marquee
+- Hydration issue resolved
+- All previous features retained (voice intro, correct links, LeetCode 70+, Software/Cloud/Automation role)

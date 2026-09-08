@@ -4,6 +4,7 @@ import * as React from "react";
 import { motion } from "framer-motion";
 import { timeline, certifications, languages } from "@/lib/portfolio-data";
 import { SectionLabel } from "@/components/section-label";
+import { FloatingParticles } from "@/components/floating-particles";
 
 function LanguageBars({ level }: { level: number }) {
   return (
@@ -23,7 +24,8 @@ function LanguageBars({ level }: { level: number }) {
 
 export function Journey() {
   return (
-    <section id="journey" className="relative py-24 sm:py-32">
+    <section id="journey" className="relative overflow-hidden py-24 sm:py-32">
+      <FloatingParticles className="opacity-30" />
       <SectionLabel index="04" title="Journey" kicker="Education & more" />
 
       <div className="grid gap-12 md:grid-cols-[1.1fr_0.9fr] md:gap-16">

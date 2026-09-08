@@ -8,6 +8,7 @@ import { SectionLabel } from "@/components/section-label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ButtonSolid } from "@/components/editorial-buttons";
+import { FloatingParticles } from "@/components/floating-particles";
 import { useToast } from "@/hooks/use-toast";
 
 type Status = "idle" | "loading" | "success";
@@ -64,7 +65,8 @@ export function Contact() {
   ];
 
   return (
-    <section id="contact" className="relative py-24 sm:py-32">
+    <section id="contact" className="relative overflow-hidden py-24 sm:py-32">
+      <FloatingParticles className="opacity-40" />
       <SectionLabel index="05" title="Contact" kicker="Get in touch" />
 
       <motion.div

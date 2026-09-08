@@ -6,6 +6,10 @@ import { Play, Pause, Volume2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const BAR_COUNT = 28;
+// Precomputed rounded heights (avoids hydration mismatch from floating-point)
+const BAR_HEIGHTS = Array.from({ length: BAR_COUNT }, (_, i) =>
+  Math.round((0.2 + Math.abs(Math.sin(i * 1.3)) * 0.8) * 100)
+);
 
 export function VoiceIntroPlayer({ src }: { src: string }) {
   const audioRef = React.useRef<HTMLAudioElement>(null);
@@ -82,9 +86,8 @@ export function VoiceIntroPlayer({ src }: { src: string }) {
 
       {/* Waveform */}
       <div className="flex h-8 flex-1 items-center gap-[3px]">
-        {Array.from({ length: BAR_COUNT }).map((_, i) => {
+        {BAR_HEIGHTS.map((h, i) => {
           const active = i / BAR_COUNT <= progress;
-          const base = 0.2 + Math.abs(Math.sin(i * 1.3)) * 0.8;
           return (
             <span
               key={i}
@@ -93,7 +96,7 @@ export function VoiceIntroPlayer({ src }: { src: string }) {
                 active ? "bg-primary" : "bg-foreground/20"
               )}
               style={{
-                height: `${base * 100}%`,
+                height: `${h}%`,
                 animation: playing
                   ? `wave ${0.8 + (i % 5) * 0.12}s ease-in-out ${i * 0.04}s infinite`
                   : undefined,

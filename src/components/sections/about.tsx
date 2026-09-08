@@ -1,9 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { motion, useInView, animate } from "framer-motion";
+import { motion, useInView, animate, useScroll, useTransform } from "framer-motion";
 import { profile } from "@/lib/portfolio-data";
 import { SectionLabel } from "@/components/section-label";
+import { FloatingParticles } from "@/components/floating-particles";
 
 function Counter({ value, suffix }: { value: number; suffix: string }) {
   const ref = React.useRef<HTMLSpanElement>(null);
@@ -29,12 +30,22 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
 }
 
 export function About() {
+  const sectionRef = React.useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+  const parallaxY = useTransform(scrollYProgress, [0, 1], [40, -40]);
+
   return (
-    <section id="about" className="relative py-24 sm:py-32">
+    <section id="about" ref={sectionRef} className="relative py-24 sm:py-32">
+      <FloatingParticles className="opacity-80" />
+      <div className="relative z-10">
       <SectionLabel index="01" title="About" kicker="Profile" />
 
       {/* Opening statement — drop-cap editorial style */}
       <motion.div
+        style={{ y: parallaxY }}
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-80px" }}
@@ -108,6 +119,7 @@ export function About() {
           </div>
         ))}
       </motion.div>
+      </div>
     </section>
   );
 }
