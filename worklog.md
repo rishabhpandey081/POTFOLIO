@@ -168,3 +168,38 @@ Stage Summary:
 - 3D background completely replaced: weird gold torus knot → elegant violet energy orb with wireframe + particles
 - Color scheme changed from gold/amber to violet/magenta on deep navy — more attractive and modern
 - All content, buttons, links, and functionality preserved exactly as before
+
+---
+Task ID: 7
+Agent: main
+Task: Change color to coral/rose, make hero 3D scale on scroll, add 3D DNA helix to projects.
+
+Work Log:
+- Changed color palette from violet to coral/rose on deep slate charcoal
+  - Primary: coral/rose oklch(0.72 0.19 18) — warm, attractive, distinctive
+  - Background: deep slate charcoal oklch(0.12 0.008 30)
+  - Accent: rose/magenta oklch(0.24 0.04 350)
+  - Ambient glows: coral top-right, rose bottom-left
+- Updated all CSS variables in both light and dark themes
+- Updated 3D hero scene colors: coral/rose icosahedron, rose wireframe, pink glow orbs
+- Updated HeroFallback, motion words glow, cursor glow, custom cursor, project accents to coral
+- Made hero 3D scene scale dramatically on scroll: 1x → 2.8x (was 1x → 1.25x)
+  - Added sceneY transform for vertical movement as you scroll
+- Built 3D DNA Helix component (dna-helix.tsx):
+  - Double helix of two spiraling strands (24 spheres each, coral + pink)
+  - Project image planes as the "rungs" connecting the strands (3 project images)
+  - Thin connecting cylinders between strands
+  - Rotates based on scroll progress (scrollProgress ref passed from parent)
+  - Bloom + vignette postprocessing, dynamic coral/rose lighting
+  - Float animation for subtle life
+- Added DNA helix to Projects section as sticky left column on desktop (lg+)
+  - Two-column layout: DNA helix (sticky, full viewport height) + project cards
+  - "Scroll to rotate" label below the helix
+  - Hidden on mobile (performance + space)
+- VLM verified: hero EYE-CATCHING (coral energy orb correct), work EYE-CATCHING (DNA double helix with image rungs visible)
+
+Stage Summary:
+- New coral/rose color scheme applied throughout (replaces violet)
+- Hero 3D orb now scales 1x → 2.8x as you scroll down the hero
+- Projects section now has a 3D DNA double helix that rotates as you scroll, with project images on the rungs
+- All content, buttons, links preserved

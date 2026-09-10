@@ -22,8 +22,11 @@ export function Hero() {
     offset: ["start start", "end start"],
   });
   const textY = useTransform(scrollYProgress, [0, 1], [0, 120]);
-  const textOpacity = useTransform(scrollYProgress, [0, 0.65], [1, 0]);
-  const sceneScale = useTransform(scrollYProgress, [0, 1], [1, 1.25]);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+  // Scale the 3D scene up dramatically as you scroll — 1x → 2.8x
+  const sceneScale = useTransform(scrollYProgress, [0, 1], [1, 2.8]);
+  // Also move it slightly so it fills more of the screen
+  const sceneY = useTransform(scrollYProgress, [0, 1], [0, -80]);
 
   const go = (href: string) =>
     document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
@@ -33,8 +36,11 @@ export function Hero() {
       ref={containerRef}
       className="relative flex min-h-screen items-center justify-center overflow-hidden"
     >
-      {/* 3D scene background (desktop) or CSS fallback (mobile) */}
-      <motion.div style={{ scale: sceneScale }} className="absolute inset-0 z-0">
+      {/* 3D scene background (desktop) or CSS fallback (mobile) — scales up on scroll */}
+      <motion.div
+        style={{ scale: sceneScale, y: sceneY }}
+        className="absolute inset-0 z-0"
+      >
         {capable ? <HeroScene /> : <HeroFallback />}
       </motion.div>
 

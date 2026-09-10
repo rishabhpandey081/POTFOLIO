@@ -61,11 +61,11 @@ export function CustomCursor() {
           height: hovering ? 56 : 34,
           opacity: hidden ? 0 : 1,
           backgroundColor: hovering
-            ? "oklch(0.72 0.2 300 / 12%)"
-            : "oklch(0.72 0.2 300 / 0%)",
+            ? "oklch(0.72 0.19 18 / 12%)"
+            : "oklch(0.72 0.19 18 / 0%)",
           borderColor: hovering
-            ? "oklch(0.72 0.2 300 / 90%)"
-            : "oklch(0.72 0.2 300 / 50%)",
+            ? "oklch(0.72 0.19 18 / 90%)"
+            : "oklch(0.72 0.19 18 / 50%)",
         }}
         transition={{ type: "spring", damping: 22, stiffness: 350 }}
       />

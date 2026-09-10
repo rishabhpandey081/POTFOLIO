@@ -42,7 +42,7 @@ function EnergyCore() {
       <mesh ref={mesh} scale={1.6}>
         <icosahedronGeometry args={[1, 2]} />
         <meshBasicMaterial
-          color="#c084fc"
+          color="#fb7185"
           wireframe
           transparent
           opacity={0.35}
@@ -53,8 +53,8 @@ function EnergyCore() {
       <mesh ref={inner} scale={1.15}>
         <icosahedronGeometry args={[1, 4]} />
         <meshStandardMaterial
-          color="#a855f7"
-          emissive="#a855f7"
+          color="#f43f5e"
+          emissive="#f43f5e"
           emissiveIntensity={0.6}
           roughness={0.15}
           metalness={0.7}
@@ -65,7 +65,7 @@ function EnergyCore() {
       {/* Inner bright glow */}
       <mesh scale={0.7}>
         <icosahedronGeometry args={[1, 3]} />
-        <meshBasicMaterial color="#e9d5ff" transparent opacity={0.4} />
+        <meshBasicMaterial color="#fecdd3" transparent opacity={0.4} />
       </mesh>
     </Float>
   );
@@ -133,16 +133,16 @@ function SceneContent() {
   return (
     <>
       <ambientLight intensity={0.25} />
-      <pointLight position={[4, 3, 4]} intensity={2.5} color="#c084fc" />
-      <pointLight position={[-5, -2, -3]} intensity={2.5} color="#ec4899" />
-      <pointLight position={[0, 5, -2]} intensity={1.5} color="#a78bfa" />
-      <directionalLight position={[0, 3, 5]} intensity={0.4} color="#e9d5ff" />
+      <pointLight position={[4, 3, 4]} intensity={2.5} color="#fb7185" />
+      <pointLight position={[-5, -2, -3]} intensity={2.5} color="#f43f5e" />
+      <pointLight position={[0, 5, -2]} intensity={1.5} color="#fda4af" />
+      <directionalLight position={[0, 3, 5]} intensity={0.4} color="#fecdd3" />
 
       <EnergyCore />
 
-      <OrbitRing radius={2.4} speed={0.4} color="#c084fc" count={14} />
-      <OrbitRing radius={2.9} speed={-0.3} color="#f0abfc" count={10} />
-      <OrbitRing radius={2.0} speed={0.6} color="#e9d5ff" count={8} />
+      <OrbitRing radius={2.4} speed={0.4} color="#fb7185" count={14} />
+      <OrbitRing radius={2.9} speed={-0.3} color="#fda4af" count={10} />
+      <OrbitRing radius={2.0} speed={0.6} color="#fecdd3" count={8} />
 
       <Sparkles
         count={70}
@@ -150,7 +150,7 @@ function SceneContent() {
         size={2.5}
         speed={0.3}
         opacity={0.5}
-        color="#e9d5ff"
+        color="#fecdd3"
       />
 
       <Environment preset="night" />

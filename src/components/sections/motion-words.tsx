@@ -89,7 +89,7 @@ function RotatingWord({ words }: { words: string[] }) {
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className="inline-block whitespace-nowrap font-display text-[clamp(2.5rem,7vw,4.5rem)] font-medium leading-none tracking-tight text-primary"
         style={{
-          textShadow: "0 0 50px oklch(0.72 0.2 300 / 0.5)",
+          textShadow: "0 0 50px oklch(0.72 0.19 18 / 0.5)",
         }}
       >
         {word}

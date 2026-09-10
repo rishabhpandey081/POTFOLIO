@@ -1,11 +1,17 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
+import { motion, useScroll } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { projects } from "@/lib/portfolio-data";
 import { FloatingParticles } from "@/components/floating-particles";
 import { useIsDesktop } from "@/hooks/use-device-capability";
+import dynamic from "next/dynamic";
+
+const DNAHelix = dynamic(
+  () => import("@/components/three/dna-helix").then((m) => m.DNAHelix),
+  { ssr: false, loading: () => null }
+);
 
 function SectionLabel({ index, title }: { index: string; title: string }) {
   return (
@@ -34,17 +40,56 @@ function SectionLabel({ index, title }: { index: string; title: string }) {
 }
 
 export function Projects() {
+  const sectionRef = React.useRef<HTMLDivElement>(null);
+  const scrollProgress = React.useRef(0);
+  const isDesktop = useIsDesktop();
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  // Update the ref that the 3D DNA reads from
+  React.useEffect(() => {
+    return scrollYProgress.on("change", (v) => {
+      scrollProgress.current = v;
+    });
+  }, [scrollYProgress]);
+
+  const projectImages = projects.map((p) => ({
+    url: p.image,
+    title: p.title,
+  }));
+
   return (
-    <section id="work" className="relative overflow-hidden py-32">
+    <section id="work" ref={sectionRef} className="relative overflow-hidden py-32">
       <FloatingParticles className="opacity-40" />
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">
         <SectionLabel index="03" title="Selected Work" />
 
-        <div className="flex flex-col gap-6">
-          {projects.map((p, i) => (
-            <ProjectCard key={p.slug} project={p} index={i} total={projects.length} />
-          ))}
+        <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
+          {/* DNA Helix — sticky on desktop, hidden on mobile */}
+          {isDesktop ? (
+            <div className="relative hidden lg:block">
+              <div className="sticky top-0 h-screen">
+                <DNAHelix scrollProgress={scrollProgress} images={projectImages} />
+                {/* label */}
+                <div className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 text-center">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+                    ✦ Scroll to rotate
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          {/* Project cards */}
+          <div className="flex flex-col gap-6">
+            {projects.map((p, i) => (
+              <ProjectCard key={p.slug} project={p} index={i} total={projects.length} />
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -108,7 +153,7 @@ function ProjectCard({
         <div
           className="pointer-events-none absolute inset-0 z-20 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
           style={{
-            background: `radial-gradient(500px circle at ${tilt.mx}% ${tilt.my}%, oklch(0.72 0.2 300 / 0.15), transparent 60%)`,
+            background: `radial-gradient(500px circle at ${tilt.mx}% ${tilt.my}%, oklch(0.72 0.19 18 / 0.15), transparent 60%)`,
           }}
         />
 
