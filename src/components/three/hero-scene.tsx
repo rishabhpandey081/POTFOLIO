@@ -144,18 +144,11 @@ function SceneContent() {
       <OrbitRing radius={2.9} speed={-0.3} color="#fda4af" count={10} />
       <OrbitRing radius={2.0} speed={0.6} color="#fecdd3" count={8} />
 
-      <Sparkles
-        count={70}
-        scale={11}
-        size={2.5}
-        speed={0.3}
-        opacity={0.5}
-        color="#fecdd3"
-      />
+      <Sparkles count={40} scale={10} size={2} speed={0.3} opacity={0.5} color="#fecdd3" />
 
       <Environment preset="night" />
       <Rig />
-      <EffectComposer multisampling={4}>
+      <EffectComposer multisampling={2}>
         <Bloom
           intensity={1.2}
           luminanceThreshold={0.2}

@@ -10,7 +10,7 @@ type Props = {
   rotationRef: React.MutableRefObject<number>;
 };
 
-const SPHERES_PER_STRAND = 72;
+const SPHERES_PER_STRAND = 40;
 const HELIX_HEIGHT = 9;
 const RADIUS = 1.35;
 const TURNS = 4;
@@ -61,7 +61,7 @@ function DNAStrand({ rotationRef }: Props) {
   // Build rung transforms: connect every 3rd pair of strand spheres
   const rungTransforms = React.useMemo(() => {
     const out: { pos: THREE.Vector3; quat: THREE.Quaternion; len: number; color: THREE.Color }[] = [];
-    for (let i = 0; i < SPHERES_PER_STRAND; i += 3) {
+    for (let i = 0; i < SPHERES_PER_STRAND; i += 4) {
       const p1 = strand1[i];
       const p2 = strand2[i];
       const mid = p1.clone().add(p2).multiplyScalar(0.5);
@@ -188,7 +188,7 @@ function Scene({ rotationRef }: Props) {
       </Float>
 
       <Environment preset="night" />
-      <EffectComposer multisampling={4}>
+      <EffectComposer multisampling={2}>
         <Bloom
           intensity={0.85}
           luminanceThreshold={0.25}
