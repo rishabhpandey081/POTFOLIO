@@ -40,25 +40,49 @@ function SectionLabel({ index, title }: { index: string; title: string }) {
 
 export function ProjectShowcase() {
   const isDesktop = useIsDesktop();
-  // Mobile uses auto-rotate, desktop uses scroll-driven rotation
   if (isDesktop) return <DesktopShowcase />;
   return <MobileShowcase />;
 }
 
 /* ───────────────────── DESKTOP: pinned scroll-driven ───────────────────── */
 
+// Per-project transform state: scale + x-offset
+type ImgState = { scale: number; x: number; opacity: number };
+
 function DesktopShowcase() {
   const sectionRef = React.useRef<HTMLDivElement>(null);
   const pinRef = React.useRef<HTMLDivElement>(null);
+  // DNA rotation: driven continuously across the whole scroll (0→1)
   const rotationRef = React.useRef(0);
-  // activeIndex tracks which project is currently revealed (0..projects.length-1)
+  // Per-project image states, updated imperatively for smoothness
+  const imgRefs = React.useRef<(HTMLDivElement | null)[]>([]);
   const [activeIndex, setActiveIndex] = React.useState(0);
-  const [scrollStarted, setScrollStarted] = React.useState(false);
   const [hintVisible, setHintVisible] = React.useState(true);
-  const gsapRef = React.useRef<typeof import("gsap") | null>(null);
+
+  // Compute the scale/x/opacity for one project given its local segment progress.
+  // local < 0  → segment hasn't started yet (hidden)
+  // local 0..1 → in this project's segment (enter → full → exit)
+  // local > 1  → segment already passed (hidden)
+  function transformForLocal(local: number): ImgState {
+    // Before the segment → fully hidden
+    if (local < 0) return { scale: 0.3, x: -220, opacity: 0 };
+    // After the segment → fully hidden
+    if (local > 1) return { scale: 0.3, x: -220, opacity: 0 };
+    // Clamp 0..1
+    const cl = Math.max(0, Math.min(1, local));
+    // Triangle wave: 0 → 1 → 0 across the segment
+    const tri = cl <= 0.5 ? cl * 2 : (1 - cl) * 2; // 0..1..0
+    const scale = 0.3 + tri * 0.7; // 0.3 → 1.0 → 0.3
+    const x = (1 - tri) * -220; // -220 → 0 → -220
+    // Fade in at the very start of the segment, stay full, fade out at the very end
+    let opacity: number;
+    if (cl < 0.08) opacity = Math.max(0.4, cl / 0.08);
+    else if (cl > 0.92) opacity = Math.max(0.4, (1 - cl) / 0.08);
+    else opacity = 1;
+    return { scale, x, opacity };
+  }
 
   React.useEffect(() => {
-    let st: unknown;
     let cleanup = () => {};
     let ctx: { revert: () => void } | undefined;
 
@@ -69,11 +93,9 @@ function DesktopShowcase() {
       const gsap = (await import("gsap")).default;
       const { ScrollTrigger } = await import("gsap/ScrollTrigger");
       gsap.registerPlugin(ScrollTrigger);
-      gsapRef.current = gsap;
 
       ctx = gsap.context(() => {
-        // Pin the panel and drive rotation 0→1 over the scroll
-        st = ScrollTrigger.create({
+        ScrollTrigger.create({
           trigger: section,
           start: "top top",
           end: "+=300%",
@@ -81,23 +103,46 @@ function DesktopShowcase() {
           scrub: true,
           onUpdate: (self: { progress: number }) => {
             const p = self.progress;
-            rotationRef.current = p; // 0→1 maps to full 360° in the canvas
-            if (p > 0.02) {
-              setScrollStarted(true);
-              setHintVisible(false);
-            } else {
-              setHintVisible(true);
-            }
-            // Determine active project based on progress splits
+            // DNA: continuous rotation across entire scroll (never stutters)
+            rotationRef.current = p;
+            if (p > 0.02) setHintVisible(false);
+            else setHintVisible(true);
+
+            // Determine active project (the one closest to mid-segment)
             const count = projects.length;
-            // give each project an equal slice, with a small overlap at edges
-            const idx = Math.min(count - 1, Math.floor(p * count * 0.999));
-            setActiveIndex(idx);
+            const seg = 1 / count;
+            const activeIdx = Math.min(
+              count - 1,
+              Math.max(0, Math.floor(p / seg))
+            );
+            // Only update React state when it changes (avoids re-render spam)
+            setActiveIndex((prev) => (prev !== activeIdx ? activeIdx : prev));
+
+            // Drive each project's image transform from its local segment progress
+            for (let i = 0; i < count; i++) {
+              const segStart = i * seg;
+              const local = (p - segStart) / seg; // can be <0 (before) or >1 (after)
+              const t = transformForLocal(local);
+              const el = imgRefs.current[i];
+              if (el) {
+                el.style.transform = `translateX(${t.x}px) scale(${t.scale})`;
+                el.style.opacity = `${t.opacity}`;
+              }
+            }
           },
           onLeaveBack: () => {
             rotationRef.current = 0;
             setActiveIndex(0);
             setHintVisible(true);
+            // reset all images to their initial states
+            for (let i = 0; i < projects.length; i++) {
+              const el = imgRefs.current[i];
+              if (el) {
+                const t = transformForLocal(i === 0 ? 0 : -1);
+                el.style.transform = `translateX(${t.x}px) scale(${t.scale})`;
+                el.style.opacity = `${t.opacity}`;
+              }
+            }
           },
         });
       }, section);
@@ -110,8 +155,6 @@ function DesktopShowcase() {
     return () => cleanup();
   }, []);
 
-  const active = projects[activeIndex];
-
   return (
     <section id="work" ref={sectionRef} className="relative overflow-hidden">
       <div className="mx-auto max-w-6xl px-6 pt-32">
@@ -121,10 +164,9 @@ function DesktopShowcase() {
       {/* Pinned panel — stays fixed while scrolling through 300% height */}
       <div ref={pinRef} className="relative h-screen w-full">
         <div className="mx-auto grid h-full max-w-6xl grid-cols-2 items-center gap-8 px-6">
-          {/* LEFT — DNA Helix canvas */}
+          {/* LEFT — DNA Helix canvas (rotation never touched) */}
           <div className="relative h-[70vh]">
             <DNAHelix rotationRef={rotationRef} />
-            {/* "Scroll to rotate" hint — fades out on scroll */}
             <motion.div
               animate={{ opacity: hintVisible ? 1 : 0 }}
               transition={{ duration: 0.4 }}
@@ -136,9 +178,70 @@ function DesktopShowcase() {
             </motion.div>
           </div>
 
-          {/* RIGHT — image + text panel that crossfades per project */}
+          {/* RIGHT — stacked image layers + counter + text panel */}
           <div className="relative h-[70vh]">
-            <ProjectPanel project={active} index={activeIndex} total={projects.length} />
+            {/* Counter */}
+            <div className="mb-4 flex items-center gap-3">
+              <span className="font-mono text-xs tabular-nums text-primary">
+                0{activeIndex + 1} / 0{projects.length}
+              </span>
+              <span className="h-px flex-1 bg-border/50" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                {projects[activeIndex].featured ? "Featured" : "Project"}
+              </span>
+            </div>
+
+            {/* Stacked image layers — each project's image rendered simultaneously, */}
+            {/* transform/opacity driven imperatively by ScrollTrigger. */}
+            <div className="relative mb-5 aspect-[16/10] overflow-hidden rounded-2xl border border-border/40">
+              {projects.map((p, i) => {
+                // Project 0 starts in its "entering" state (local=0: small, at side, semi-visible).
+                // Other projects start before their segment (local=-1: hidden).
+                const init = transformForLocal(i === 0 ? 0 : -1);
+                return (
+                  <div
+                    key={p.slug}
+                    ref={(el) => {
+                      imgRefs.current[i] = el;
+                    }}
+                    className="absolute inset-0 will-change-transform"
+                    style={{
+                      transform: `translateX(${init.x}px) scale(${init.scale})`,
+                      opacity: init.opacity,
+                      transition: "none",
+                      transformOrigin: "center center",
+                    }}
+                  >
+                    <div className={`absolute inset-0 bg-gradient-to-br ${p.accent}`} />
+                    <img
+                      src={p.image}
+                      alt={p.title}
+                      className="relative h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Text panel — crossfades in sync with the active project */}
+            <div className="relative">
+              {projects.map((p, i) => (
+                <motion.div
+                  key={p.slug}
+                  initial={false}
+                  animate={{
+                    opacity: i === activeIndex ? 1 : 0,
+                    y: i === activeIndex ? 0 : 8,
+                  }}
+                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                  className={i === activeIndex ? "" : "pointer-events-none absolute inset-0"}
+                >
+                  <ProjectText p={p} />
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -149,103 +252,52 @@ function DesktopShowcase() {
   );
 }
 
-/* ─── RIGHT panel: counter + image + title/description/bullets ─── */
-function ProjectPanel({
-  project: p,
-  index: i,
-  total,
-}: {
-  project: (typeof projects)[number];
-  index: number;
-  total: number;
-}) {
+/* ─── Title / description / bullets / stack + repo ─── */
+function ProjectText({ p }: { p: (typeof projects)[number] }) {
   return (
-    <div className="flex h-full flex-col">
-      {/* Counter */}
-      <div className="mb-4 flex items-center gap-3">
-        <span className="font-mono text-xs tabular-nums text-primary">
-          0{i + 1} / 0{total}
-        </span>
-        <span className="h-px flex-1 bg-border/50" />
-        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-          {p.featured ? "Featured" : "Project"}
-        </span>
+    <>
+      <h3 className="font-display text-2xl font-medium leading-tight tracking-tight sm:text-3xl">
+        {p.title}
+      </h3>
+      <p className="mt-1.5 text-sm text-muted-foreground">{p.subtitle}</p>
+      <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
+        {p.description}
+      </p>
+      <ul className="mt-4 space-y-2">
+        {p.highlights.slice(0, 2).map((h) => (
+          <li
+            key={h}
+            className="flex gap-2.5 text-[13px] leading-relaxed text-muted-foreground"
+          >
+            <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-primary" />
+            {h}
+          </li>
+        ))}
+      </ul>
+      <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
+        {p.stack.map((s) => (
+          <span
+            key={s}
+            className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground/70"
+          >
+            {s}
+          </span>
+        ))}
       </div>
-
-      {/* Image — crossfades/slides on project change */}
-      <motion.div
-        key={`img-${p.slug}`}
-        initial={{ x: -60, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        exit={{ x: -60, opacity: 0 }}
-        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="relative mb-5 aspect-[16/10] overflow-hidden rounded-2xl border border-border/40"
-      >
-        <div className={`absolute inset-0 bg-gradient-to-br ${p.accent}`} />
-        <img
-          src={p.image}
-          alt={p.title}
-          className="relative h-full w-full object-cover"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
-      </motion.div>
-
-      {/* Title / subtitle / description */}
-      <motion.div
-        key={`txt-${p.slug}`}
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -12 }}
-        transition={{ duration: 0.4, delay: 0.05 }}
-      >
-        <h3 className="font-display text-2xl font-medium leading-tight tracking-tight sm:text-3xl">
-          {p.title}
-        </h3>
-        <p className="mt-1.5 text-sm text-muted-foreground">{p.subtitle}</p>
-        <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
-          {p.description}
-        </p>
-
-        {/* highlights */}
-        <ul className="mt-4 space-y-2">
-          {p.highlights.slice(0, 2).map((h) => (
-            <li
-              key={h}
-              className="flex gap-2.5 text-[13px] leading-relaxed text-muted-foreground"
-            >
-              <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-primary" />
-              {h}
-            </li>
-          ))}
-        </ul>
-
-        {/* stack + repo */}
-        <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
-          {p.stack.map((s) => (
-            <span
-              key={s}
-              className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground/70"
-            >
-              {s}
-            </span>
-          ))}
-        </div>
-        <div className="mt-4">
-          {p.repo ? (
-            <a
-              href={p.repo}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group/btn inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background transition-transform hover:scale-105"
-            >
-              View repository
-              <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
-            </a>
-          ) : null}
-        </div>
-      </motion.div>
-    </div>
+      <div className="mt-4">
+        {p.repo ? (
+          <a
+            href={p.repo}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group/btn inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background transition-transform hover:scale-105"
+          >
+            View repository
+            <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5" />
+          </a>
+        ) : null}
+      </div>
+    </>
   );
 }
 
@@ -259,9 +311,8 @@ function MobileShowcase() {
   React.useEffect(() => {
     let angle = 0;
     const tick = () => {
-      angle += 0.004; // gentle auto-rotate
-      rotationRef.current = angle / (Math.PI * 2); // normalize to 0..1+ cycles
-      // cycle the active project every ~5s
+      angle += 0.004;
+      rotationRef.current = angle / (Math.PI * 2);
       const cycle = (angle / (Math.PI * 2)) % projects.length;
       const idx = Math.floor(cycle) % projects.length;
       setActiveIndex(idx);
@@ -278,12 +329,10 @@ function MobileShowcase() {
       <div className="mx-auto max-w-6xl px-6">
         <SectionLabel index="03" title="Selected Work" />
 
-        {/* DNA canvas on top */}
         <div className="relative mb-6 h-[55vh]">
           <DNAHelix rotationRef={rotationRef} />
         </div>
 
-        {/* Counter */}
         <div className="mb-4 flex items-center gap-3">
           <span className="font-mono text-xs tabular-nums text-primary">
             0{activeIndex + 1} / 0{projects.length}
@@ -294,12 +343,11 @@ function MobileShowcase() {
           </span>
         </div>
 
-        {/* Image */}
         <motion.div
           key={`m-img-${active.slug}`}
-          initial={{ x: -50, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ duration: 0.5 }}
+          initial={{ scale: 0.3, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className="relative mb-5 aspect-[16/10] overflow-hidden rounded-2xl border border-border/40"
         >
           <div className={`absolute inset-0 bg-gradient-to-br ${active.accent}`} />
@@ -311,41 +359,13 @@ function MobileShowcase() {
           />
         </motion.div>
 
-        {/* Text */}
         <motion.div
           key={`m-txt-${active.slug}`}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <h3 className="font-display text-2xl font-medium leading-tight tracking-tight">
-            {active.title}
-          </h3>
-          <p className="mt-1.5 text-sm text-muted-foreground">{active.subtitle}</p>
-          <p className="mt-3 text-[14px] leading-relaxed text-muted-foreground">
-            {active.description}
-          </p>
-          <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2">
-            {active.stack.map((s) => (
-              <span
-                key={s}
-                className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground/70"
-              >
-                {s}
-              </span>
-            ))}
-          </div>
-          {active.repo ? (
-            <a
-              href={active.repo}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-5 inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background"
-            >
-              View repository
-              <ArrowUpRight className="h-3.5 w-3.5" />
-            </a>
-          ) : null}
+          <ProjectText p={active} />
         </motion.div>
       </div>
     </section>

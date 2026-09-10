@@ -241,3 +241,32 @@ Stage Summary:
 - GSAP ScrollTrigger pins section, drives full 360° rotation + project swaps
 - Image reveals from left, text panel crossfades, counter synced
 - Mobile uses auto-rotate stacked layout (no pin)
+
+---
+Task ID: 9
+Agent: main
+Task: Fix project image reveal to fly-in/fly-out (small→full→small) driven by scroll progress per segment.
+
+Work Log:
+- DNA helix rotation left UNTOUCHED (still driven continuously 0→1 across all 3 segments)
+- Rewrote DesktopShowcase image reveal:
+  - All 3 project images rendered simultaneously as stacked layers
+  - Per-project transform driven imperatively via ScrollTrigger onUpdate
+  - transformForLocal(local): triangle wave 0→1→0 across each segment
+    - scale: 0.3 → 1.0 → 0.3 (small → full → small)
+    - x: -220px → 0 → -220px (side → center → side, flies in past camera)
+    - opacity: 0 → 1 (quick fade at segment edges, full through middle)
+    - local < 0 or > 1 → fully hidden (before/after segment)
+  - Scroll progress split into 3 equal segments (one per project)
+  - Active project index synced to segment, counter "01 / 03" updates
+  - Text panel (title/description/bullets/stack/repo) crossfades in sync via framer-motion AnimatePresence
+  - onLeaveBack resets all images to initial states
+- Initial state: project 0 at local=0 (small, entering, semi-visible); projects 1,2 hidden
+- Verified via DOM: at start all images scale(0.3) translateX(-220px); at mid seg1 img0=scale(1) translateX(0) opacity 1, others hidden
+- VLM confirmed: start = small/faded near DNA helix, mid = full-size/sharp/centered — fly-in working
+
+Stage Summary:
+- Project image reveal now does the small→big→small fly-in/fly-out motion per segment
+- DNA rotation unchanged (continuous 360° across full scroll)
+- Text panel crossfades in sync with active project
+- Counter synced
