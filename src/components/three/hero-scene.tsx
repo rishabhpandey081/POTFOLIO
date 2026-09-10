@@ -7,75 +7,114 @@ import {
   Environment,
   AdaptiveDpr,
   Sparkles,
-  ContactShadows,
 } from "@react-three/drei";
-import { EffectComposer, Bloom, Vignette, ChromaticAberration } from "@react-three/postprocessing";
-import { BlendFunction } from "postprocessing";
+import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 
-function CrystalKnot() {
+/**
+ * Glowing energy core — an icosahedron with a pulsing emissive glow,
+ * surrounded by a rotating wireframe shell and orbiting particle ring.
+ * Much more elegant and "alive" than a torus knot.
+ */
+
+function EnergyCore() {
   const mesh = React.useRef<THREE.Mesh>(null);
-  const { pointer } = useThree();
+  const inner = React.useRef<THREE.Mesh>(null);
 
   useFrame((state, delta) => {
-    if (!mesh.current) return;
-    mesh.current.rotation.y += delta * 0.15;
-    mesh.current.rotation.x += delta * 0.05;
+    if (mesh.current) {
+      mesh.current.rotation.y += delta * 0.2;
+      mesh.current.rotation.x += delta * 0.08;
+    }
+    if (inner.current) {
+      inner.current.rotation.y -= delta * 0.35;
+      inner.current.rotation.z += delta * 0.15;
+      // pulse scale
+      const t = state.clock.elapsedTime;
+      const s = 1 + Math.sin(t * 1.5) * 0.04;
+      inner.current.scale.setScalar(s);
+    }
   });
 
   return (
-    <Float speed={1.2} rotationIntensity={0.3} floatIntensity={0.8}>
-      {/* Main crystal — metallic emerald with strong emissive */}
-      <mesh ref={mesh} scale={1.5}>
-        <torusKnotGeometry args={[1, 0.3, 200, 32]} />
+    <Float speed={1.0} rotationIntensity={0.25} floatIntensity={0.6}>
+      {/* Outer wireframe shell */}
+      <mesh ref={mesh} scale={1.6}>
+        <icosahedronGeometry args={[1, 2]} />
+        <meshBasicMaterial
+          color="#c084fc"
+          wireframe
+          transparent
+          opacity={0.35}
+        />
+      </mesh>
+
+      {/* Glowing solid core */}
+      <mesh ref={inner} scale={1.15}>
+        <icosahedronGeometry args={[1, 4]} />
         <meshStandardMaterial
-          color="#10b981"
-          emissive="#10b981"
-          emissiveIntensity={0.4}
-          roughness={0.1}
-          metalness={0.9}
+          color="#a855f7"
+          emissive="#a855f7"
+          emissiveIntensity={0.6}
+          roughness={0.15}
+          metalness={0.7}
           envMapIntensity={1.5}
         />
       </mesh>
-      {/* Inner glowing core */}
-      <mesh scale={0.8}>
-        <torusKnotGeometry args={[1, 0.35, 100, 16]} />
-        <meshBasicMaterial color="#6ee7b7" transparent opacity={0.3} wireframe />
+
+      {/* Inner bright glow */}
+      <mesh scale={0.7}>
+        <icosahedronGeometry args={[1, 3]} />
+        <meshBasicMaterial color="#e9d5ff" transparent opacity={0.4} />
       </mesh>
     </Float>
   );
 }
 
-function GlowOrb({
-  position,
+function OrbitRing({
+  radius,
+  speed,
   color,
-  size = 0.15,
+  count,
 }: {
-  position: [number, number, number];
+  radius: number;
+  speed: number;
   color: string;
-  size?: number;
+  count: number;
 }) {
-  const ref = React.useRef<THREE.Mesh>(null);
+  const ref = React.useRef<THREE.Group>(null);
   useFrame((state) => {
     if (!ref.current) return;
-    const t = state.clock.elapsedTime;
-    ref.current.position.set(
-      position[0] + Math.sin(t * 0.5) * 0.3,
-      position[1] + Math.cos(t * 0.7) * 0.2,
-      position[2] + Math.sin(t * 0.3) * 0.3
-    );
+    ref.current.rotation.y = state.clock.elapsedTime * speed;
+    ref.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.3) * 0.3;
   });
+
+  const positions = React.useMemo(() => {
+    const arr: [number, number, number][] = [];
+    for (let i = 0; i < count; i++) {
+      const angle = (i / count) * Math.PI * 2;
+      arr.push([
+        Math.cos(angle) * radius,
+        Math.sin(angle * 2.5) * 0.15,
+        Math.sin(angle) * radius,
+      ]);
+    }
+    return arr;
+  }, [radius, count]);
+
   return (
-    <mesh ref={ref} position={position}>
-      <sphereGeometry args={[size, 32, 32]} />
-      <meshStandardMaterial
-        color={color}
-        emissive={color}
-        emissiveIntensity={3}
-        roughness={0.2}
-        metalness={0.8}
-      />
-    </mesh>
+    <group ref={ref}>
+      {positions.map((p, i) => (
+        <mesh key={i} position={p}>
+          <sphereGeometry args={[0.04, 12, 12]} />
+          <meshStandardMaterial
+            color={color}
+            emissive={color}
+            emissiveIntensity={3}
+          />
+        </mesh>
+      ))}
+    </group>
   );
 }
 
@@ -83,7 +122,7 @@ function Rig() {
   const { camera, pointer } = useThree();
   const vec = React.useRef(new THREE.Vector3());
   useFrame(() => {
-    vec.current.set(pointer.x * 1.2, pointer.y * 0.8 + 0.3, 6);
+    vec.current.set(pointer.x * 1.0, pointer.y * 0.7 + 0.3, 6);
     camera.position.lerp(vec.current, 0.04);
     camera.lookAt(0, 0, 0);
   });
@@ -93,46 +132,38 @@ function Rig() {
 function SceneContent() {
   return (
     <>
-      <ambientLight intensity={0.2} />
-      <spotLight position={[5, 8, 5]} angle={0.3} penumbra={1} intensity={3} color="#6ee7b7" castShadow />
-      <pointLight position={[-6, -2, -4]} intensity={3} color="#10b981" />
-      <pointLight position={[6, 4, 3]} intensity={2} color="#5eead4" />
-      <directionalLight position={[0, 5, 5]} intensity={0.5} color="#a7f3d0" />
+      <ambientLight intensity={0.25} />
+      <pointLight position={[4, 3, 4]} intensity={2.5} color="#c084fc" />
+      <pointLight position={[-5, -2, -3]} intensity={2.5} color="#ec4899" />
+      <pointLight position={[0, 5, -2]} intensity={1.5} color="#a78bfa" />
+      <directionalLight position={[0, 3, 5]} intensity={0.4} color="#e9d5ff" />
 
-      <CrystalKnot />
+      <EnergyCore />
 
-      <GlowOrb position={[2.5, 1, -1]} color="#34d399" size={0.12} />
-      <GlowOrb position={[-2.8, -0.5, 0.5]} color="#5eead4" size={0.09} />
-      <GlowOrb position={[1.5, -1.5, 1]} color="#6ee7b7" size={0.1} />
+      <OrbitRing radius={2.4} speed={0.4} color="#c084fc" count={14} />
+      <OrbitRing radius={2.9} speed={-0.3} color="#f0abfc" count={10} />
+      <OrbitRing radius={2.0} speed={0.6} color="#e9d5ff" count={8} />
 
-      <Sparkles count={60} scale={10} size={2} speed={0.3} opacity={0.5} color="#6ee7b7" />
-
-      <ContactShadows
-        position={[0, -2.5, 0]}
-        opacity={0.3}
-        scale={10}
-        blur={2.5}
-        far={4}
-        color="#10b981"
+      <Sparkles
+        count={70}
+        scale={11}
+        size={2.5}
+        speed={0.3}
+        opacity={0.5}
+        color="#e9d5ff"
       />
 
       <Environment preset="night" />
       <Rig />
       <EffectComposer multisampling={4}>
         <Bloom
-          intensity={1.1}
+          intensity={1.2}
           luminanceThreshold={0.2}
           luminanceSmoothing={0.9}
           mipmapBlur
-          radius={0.8}
+          radius={0.85}
         />
-        <ChromaticAberration
-          blendFunction={BlendFunction.NORMAL}
-          offset={[0.0008, 0.0008]}
-          radialModulation={false}
-          modulationOffset={0}
-        />
-        <Vignette eskil={false} offset={0.15} darkness={0.7} />
+        <Vignette eskil={false} offset={0.15} darkness={0.65} />
       </EffectComposer>
       <AdaptiveDpr pixelated />
     </>
@@ -148,7 +179,7 @@ export function HeroScene() {
         alpha: true,
         powerPreference: "high-performance",
       }}
-      camera={{ position: [0, 0.3, 6], fov: 40 }}
+      camera={{ position: [0, 0.3, 6], fov: 42 }}
       style={{ width: "100%", height: "100%" }}
     >
       <SceneContent />

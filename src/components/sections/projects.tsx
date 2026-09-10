@@ -108,7 +108,7 @@ function ProjectCard({
         <div
           className="pointer-events-none absolute inset-0 z-20 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
           style={{
-            background: `radial-gradient(500px circle at ${tilt.mx}% ${tilt.my}%, oklch(0.72 0.15 162 / 0.15), transparent 60%)`,
+            background: `radial-gradient(500px circle at ${tilt.mx}% ${tilt.my}%, oklch(0.72 0.2 300 / 0.15), transparent 60%)`,
           }}
         />
 

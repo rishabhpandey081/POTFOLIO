@@ -138,3 +138,33 @@ Stage Summary:
 - Desktop: retained full 3D experience with minor perf optimizations
 - Accessibility: respects prefers-reduced-motion and save-data
 - Both breakpoints verified GOOD by VLM, no horizontal overflow, proper touch targets
+
+---
+Task ID: 6
+Agent: main
+Task: Replace weird gold 3D torus knot + change colors to attractive violet/magenta palette.
+
+Work Log:
+- Analyzed user's screenshot: gold torus knot looked "weird" (bloated, z-fighting artifacts, lighting mismatch)
+- Designed new color palette: violet/purple (#a855f7) + magenta/pink (#ec4899) on deep navy charcoal (#16131f) — premium, eye-catching, not overused
+- Updated globals.css: all CSS variables (--primary, --background, --accent, etc.) in both light and dark themes
+- Updated ambient background gradients to violet/magenta radial glows
+- Completely rebuilt 3D hero scene: replaced weird torus knot with an elegant "energy orb" —
+  - Glowing icosahedron core (violet, emissive, metallic) with pulsing scale animation
+  - Rotating wireframe shell (lighter violet, semi-transparent)
+  - Inner bright glow sphere
+  - 3 orbiting particle rings (violet, fuchsia, lavender) at different speeds and radii
+  - Dynamic violet/magenta point lighting
+  - Bloom + vignette postprocessing
+  - Camera parallax follows mouse
+- Updated HeroFallback (mobile) to violet/magenta gradient orb
+- Updated project accent gradients: violet/fuchsia/pink instead of amber/orange
+- Updated cursor glow, motion words glow, custom cursor colors to violet
+- Updated themeColor in viewport metadata
+- Lint clean, server running
+- VLM verified hero as EYE-CATCHING with correct violet energy orb (not torus knot)
+
+Stage Summary:
+- 3D background completely replaced: weird gold torus knot → elegant violet energy orb with wireframe + particles
+- Color scheme changed from gold/amber to violet/magenta on deep navy — more attractive and modern
+- All content, buttons, links, and functionality preserved exactly as before

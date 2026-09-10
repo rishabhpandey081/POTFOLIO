@@ -14,7 +14,7 @@ export function HeroFallback() {
         className="absolute left-1/2 top-1/2 h-[60vw] w-[60vw] max-h-[480px] max-w-[480px] -translate-x-1/2 -translate-y-1/2 animate-ambient"
         style={{
           background:
-            "radial-gradient(circle at 35% 35%, oklch(0.72 0.15 162 / 0.7), oklch(0.5 0.13 162 / 0.3) 40%, transparent 70%)",
+            "radial-gradient(circle at 35% 35%, oklch(0.72 0.2 300 / 0.7), oklch(0.7 0.2 330 / 0.3) 40%, transparent 70%)",
           borderRadius: "50%",
           filter: "blur(20px)",
         }}
@@ -24,7 +24,7 @@ export function HeroFallback() {
         className="absolute left-1/2 top-1/2 h-[30vw] w-[30vw] max-h-[240px] max-w-[240px] -translate-x-1/2 -translate-y-1/2"
         style={{
           background:
-            "radial-gradient(circle, oklch(0.85 0.15 150 / 0.9), oklch(0.72 0.15 162 / 0.4) 50%, transparent 80%)",
+            "radial-gradient(circle, oklch(0.9 0.12 290 / 0.9), oklch(0.72 0.2 300 / 0.4) 50%, transparent 80%)",
           borderRadius: "50%",
           filter: "blur(8px)",
           animation: "ambient 8s ease-in-out infinite",
