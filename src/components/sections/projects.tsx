@@ -68,21 +68,19 @@ export function Projects() {
       <div className="relative z-10 mx-auto max-w-6xl px-6">
         <SectionLabel index="03" title="Selected Work" />
 
-        <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
+        <div className="grid gap-8 md:grid-cols-[0.85fr_1.15fr]">
           {/* DNA Helix — sticky on desktop, hidden on mobile */}
-          {isDesktop ? (
-            <div className="relative hidden lg:block">
-              <div className="sticky top-0 h-screen">
-                <DNAHelix scrollProgress={scrollProgress} images={projectImages} />
-                {/* label */}
-                <div className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 text-center">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
-                    ✦ Scroll to rotate
-                  </p>
-                </div>
+          <div className="relative hidden md:block">
+            <div className="sticky top-0 h-screen">
+              <DNAHelix scrollProgress={scrollProgress} images={projectImages} />
+              {/* label */}
+              <div className="pointer-events-none absolute bottom-8 left-1/2 -translate-x-1/2 text-center">
+                <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+                  ✦ Scroll to rotate
+                </p>
               </div>
             </div>
-          ) : null}
+          </div>
 
           {/* Project cards */}
           <div className="flex flex-col gap-6">
