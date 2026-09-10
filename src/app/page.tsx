@@ -5,7 +5,7 @@ import { Hero } from "@/components/sections/hero";
 import { MotionWords } from "@/components/sections/motion-words";
 import { About } from "@/components/sections/about";
 import { Skills } from "@/components/sections/skills";
-import { Projects } from "@/components/sections/projects";
+import { ProjectShowcase } from "@/components/sections/project-showcase";
 import { Journey } from "@/components/sections/journey";
 import { Contact } from "@/components/sections/contact";
 import { Footer } from "@/components/sections/footer";
@@ -22,7 +22,7 @@ export default function Home() {
         <MotionWords />
         <About />
         <Skills />
-        <Projects />
+        <ProjectShowcase />
         <Journey />
         <Contact />
       </main>

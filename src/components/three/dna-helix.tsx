@@ -2,198 +2,195 @@
 
 import * as React from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Environment, AdaptiveDpr, Float, useTexture } from "@react-three/drei";
+import { Environment, AdaptiveDpr, Float } from "@react-three/drei";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
 import * as THREE from "three";
 
-type ProjectImage = { url: string; title: string };
+type Props = {
+  rotationRef: React.MutableRefObject<number>;
+};
 
-function DNAStrand({
-  scrollProgress,
-  images,
-}: {
-  scrollProgress: React.MutableRefObject<number>;
-  images: ProjectImage[];
-}) {
-  const groupRef = React.useRef<THREE.Group>(null);
+const SPHERES_PER_STRAND = 72;
+const HELIX_HEIGHT = 9;
+const RADIUS = 1.35;
+const TURNS = 4;
 
-  const POINTS = 24;
-  const HELIX_HEIGHT = 8;
-  const RADIUS = 1.3;
-  const TURNS = 3;
-
-  const strand1Points = React.useMemo(() => {
-    const pts: THREE.Vector3[] = [];
-    for (let i = 0; i < POINTS; i++) {
-      const t = i / (POINTS - 1);
-      const angle = t * Math.PI * 2 * TURNS;
-      pts.push(
-        new THREE.Vector3(
-          Math.cos(angle) * RADIUS,
-          (t - 0.5) * HELIX_HEIGHT,
-          Math.sin(angle) * RADIUS
-        )
-      );
-    }
-    return pts;
-  }, []);
-
-  const strand2Points = React.useMemo(() => {
-    const pts: THREE.Vector3[] = [];
-    for (let i = 0; i < POINTS; i++) {
-      const t = i / (POINTS - 1);
-      const angle = t * Math.PI * 2 * TURNS + Math.PI;
-      pts.push(
-        new THREE.Vector3(
-          Math.cos(angle) * RADIUS,
-          (t - 0.5) * HELIX_HEIGHT,
-          Math.sin(angle) * RADIUS
-        )
-      );
-    }
-    return pts;
-  }, []);
-
-  const rungData = React.useMemo(() => {
-    return images.map((img, i) => {
-      const t = (i + 0.5) / images.length;
-      const angle = t * Math.PI * 2 * TURNS;
-      const angle2 = angle + Math.PI;
-      const p1 = new THREE.Vector3(
+// Build strand point positions
+function buildStrand(offset: number) {
+  const pts: THREE.Vector3[] = [];
+  for (let i = 0; i < SPHERES_PER_STRAND; i++) {
+    const t = i / (SPHERES_PER_STRAND - 1);
+    const angle = t * Math.PI * 2 * TURNS + offset;
+    pts.push(
+      new THREE.Vector3(
         Math.cos(angle) * RADIUS,
         (t - 0.5) * HELIX_HEIGHT,
         Math.sin(angle) * RADIUS
-      );
-      const p2 = new THREE.Vector3(
-        Math.cos(angle2) * RADIUS,
-        (t - 0.5) * HELIX_HEIGHT,
-        Math.sin(angle2) * RADIUS
-      );
-      const mid = p1.clone().add(p2).multiplyScalar(0.5);
-      const dist = p1.distanceTo(p2);
-      const dir = p2.clone().sub(p1).normalize();
-      const quaternion = new THREE.Quaternion();
-      quaternion.setFromUnitVectors(new THREE.Vector3(1, 0, 0), dir);
-      return { pos: mid, quat: quaternion, width: dist, image: img, index: i };
-    });
-  }, [images]);
+      )
+    );
+  }
+  return pts;
+}
 
-  // Load textures with drei's useTexture (has built-in Suspense handling)
-  const textures = useTexture(images.map((img) => img.url));
+// Palette: pink, coral, white, gold accents — cycles
+const PALETTE = [
+  "#fb7185", // pink
+  "#f43f5e", // coral
+  "#fecdd3", // light pink
+  "#fda4af", // soft pink
+  "#fff1f2", // near-white pink
+];
+
+function colorForIndex(i: number): THREE.Color {
+  return new THREE.Color(PALETTE[i % PALETTE.length]);
+}
+
+/**
+ * Instanced DNA double helix — two strands of glossy spheres + thin rungs.
+ * Rotation is driven externally via rotationRef (set by GSAP ScrollTrigger).
+ */
+function DNAStrand({ rotationRef }: Props) {
+  const groupRef = React.useRef<THREE.Group>(null);
+  const strand1Mesh = React.useRef<THREE.InstancedMesh>(null);
+  const strand2Mesh = React.useRef<THREE.InstancedMesh>(null);
+  const rungMesh = React.useRef<THREE.InstancedMesh>(null);
+
+  const strand1 = React.useMemo(() => buildStrand(0), []);
+  const strand2 = React.useMemo(() => buildStrand(Math.PI), []);
+
+  // Build rung transforms: connect every 3rd pair of strand spheres
+  const rungTransforms = React.useMemo(() => {
+    const out: { pos: THREE.Vector3; quat: THREE.Quaternion; len: number; color: THREE.Color }[] = [];
+    for (let i = 0; i < SPHERES_PER_STRAND; i += 3) {
+      const p1 = strand1[i];
+      const p2 = strand2[i];
+      const mid = p1.clone().add(p2).multiplyScalar(0.5);
+      const len = p1.distanceTo(p2);
+      const dir = p2.clone().sub(p1).normalize();
+      const quat = new THREE.Quaternion();
+      quat.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+      out.push({ pos: mid, quat, len, color: colorForIndex(i) });
+    }
+    return out;
+  }, [strand1, strand2]);
+
+  // Set instance matrices + colors for strands
+  React.useEffect(() => {
+    const dummy = new THREE.Object3D();
+    const color = new THREE.Color();
+
+    // Strand 1
+    if (strand1Mesh.current) {
+      strand1.forEach((p, i) => {
+        dummy.position.copy(p);
+        dummy.scale.setScalar(1);
+        dummy.updateMatrix();
+        strand1Mesh.current!.setMatrixAt(i, dummy.matrix);
+        color.copy(colorForIndex(i));
+        strand1Mesh.current!.setColorAt(i, color);
+      });
+      strand1Mesh.current.instanceMatrix.needsUpdate = true;
+      if (strand1Mesh.current.instanceColor) strand1Mesh.current.instanceColor.needsUpdate = true;
+    }
+
+    // Strand 2
+    if (strand2Mesh.current) {
+      strand2.forEach((p, i) => {
+        dummy.position.copy(p);
+        dummy.scale.setScalar(0.85);
+        dummy.updateMatrix();
+        strand2Mesh.current!.setMatrixAt(i, dummy.matrix);
+        color.copy(colorForIndex(i + 2));
+        strand2Mesh.current!.setColorAt(i, color);
+      });
+      strand2Mesh.current.instanceMatrix.needsUpdate = true;
+      if (strand2Mesh.current.instanceColor) strand2Mesh.current.instanceColor.needsUpdate = true;
+    }
+
+    // Rungs
+    if (rungMesh.current) {
+      rungTransforms.forEach((r, i) => {
+        dummy.position.copy(r.pos);
+        dummy.quaternion.copy(r.quat);
+        dummy.scale.set(1, r.len, 1);
+        dummy.updateMatrix();
+        rungMesh.current!.setMatrixAt(i, dummy.matrix);
+        color.copy(r.color);
+        rungMesh.current!.setColorAt(i, color);
+      });
+      rungMesh.current.instanceMatrix.needsUpdate = true;
+      if (rungMesh.current.instanceColor) rungMesh.current.instanceColor.needsUpdate = true;
+    }
+  }, [strand1, strand2, rungTransforms]);
 
   useFrame((state) => {
     if (!groupRef.current) return;
-    const scroll = scrollProgress.current;
-    groupRef.current.rotation.y = scroll * Math.PI * 4 + state.clock.elapsedTime * 0.1;
-    groupRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.3) * 0.08;
+    // Drive Y rotation from the external ref (GSAP scroll progress 0→1)
+    const scroll = rotationRef.current;
+    groupRef.current.rotation.y = scroll * Math.PI * 2; // full 360°
+    // subtle idle + tilt
+    groupRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.3) * 0.06;
   });
 
   return (
     <group ref={groupRef}>
-      {/* Strand 1 — spheres */}
-      {strand1Points.map((p, i) => (
-        <mesh key={`s1-${i}`} position={p}>
-          <sphereGeometry args={[0.08, 16, 16]} />
-          <meshStandardMaterial
-            color="#fb7185"
-            emissive="#f43f5e"
-            emissiveIntensity={0.5}
-            roughness={0.2}
-            metalness={0.6}
-          />
-        </mesh>
-      ))}
+      {/* Strand 1 — instanced spheres */}
+      <instancedMesh ref={strand1Mesh} args={[undefined, undefined, SPHERES_PER_STRAND]}>
+        <sphereGeometry args={[0.085, 16, 16]} />
+        <meshStandardMaterial
+          roughness={0.15}
+          metalness={0.65}
+          emissive="#f43f5e"
+          emissiveIntensity={0.35}
+          envMapIntensity={1.4}
+        />
+      </instancedMesh>
 
-      {/* Strand 2 — spheres */}
-      {strand2Points.map((p, i) => (
-        <mesh key={`s2-${i}`} position={p}>
-          <sphereGeometry args={[0.08, 16, 16]} />
-          <meshStandardMaterial
-            color="#fda4af"
-            emissive="#fb7185"
-            emissiveIntensity={0.5}
-            roughness={0.2}
-            metalness={0.6}
-          />
-        </mesh>
-      ))}
+      {/* Strand 2 — instanced spheres (slightly smaller) */}
+      <instancedMesh ref={strand2Mesh} args={[undefined, undefined, SPHERES_PER_STRAND]}>
+        <sphereGeometry args={[0.085, 16, 16]} />
+        <meshStandardMaterial
+          roughness={0.15}
+          metalness={0.65}
+          emissive="#fb7185"
+          emissiveIntensity={0.35}
+          envMapIntensity={1.4}
+        />
+      </instancedMesh>
 
-      {/* Thin connecting cylinders */}
-      {strand1Points.map((p1, i) => {
-        if (i % 2 !== 0) return null;
-        const p2 = strand2Points[i];
-        const mid = p1.clone().add(p2).multiplyScalar(0.5);
-        const dist = p1.distanceTo(p2);
-        const dir = p2.clone().sub(p1).normalize();
-        const quaternion = new THREE.Quaternion();
-        quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
-        return (
-          <mesh key={`rung-${i}`} position={mid} quaternion={quaternion}>
-            <cylinderGeometry args={[0.012, 0.012, dist, 8]} />
-            <meshStandardMaterial
-              color="#f43f5e"
-              emissive="#f43f5e"
-              emissiveIntensity={0.3}
-              transparent
-              opacity={0.4}
-            />
-          </mesh>
-        );
-      })}
-
-      {/* Project image planes — the "rungs" */}
-      {rungData.map((r, i) => (
-        <group key={`img-${i}`} position={r.pos} quaternion={r.quat}>
-          <mesh>
-            <planeGeometry args={[r.width, r.width * 0.6]} />
-            <meshStandardMaterial
-              map={textures[i]}
-              roughness={0.3}
-              metalness={0.2}
-              side={THREE.DoubleSide}
-              transparent
-              opacity={0.92}
-            />
-          </mesh>
-          {/* Glow behind image */}
-          <mesh position={[0, 0, -0.02]} scale={1.15}>
-            <planeGeometry args={[r.width, r.width * 0.6]} />
-            <meshBasicMaterial
-              color="#fb7185"
-              transparent
-              opacity={0.15}
-              side={THREE.DoubleSide}
-            />
-          </mesh>
-        </group>
-      ))}
+      {/* Rungs — instanced thin cylinders */}
+      <instancedMesh ref={rungMesh} args={[undefined, undefined, rungTransforms.length]}>
+        <cylinderGeometry args={[0.015, 0.015, 1, 8]} />
+        <meshStandardMaterial
+          roughness={0.3}
+          metalness={0.5}
+          emissive="#fb7185"
+          emissiveIntensity={0.4}
+          transparent
+          opacity={0.7}
+        />
+      </instancedMesh>
     </group>
   );
 }
 
-function DNAScene({
-  scrollProgress,
-  images,
-}: {
-  scrollProgress: React.MutableRefObject<number>;
-  images: ProjectImage[];
-}) {
+function Scene({ rotationRef }: Props) {
   return (
     <>
-      <ambientLight intensity={0.3} />
-      <pointLight position={[3, 2, 4]} intensity={2} color="#fb7185" />
-      <pointLight position={[-3, -2, -3]} intensity={2} color="#f43f5e" />
-      <pointLight position={[0, 4, 0]} intensity={1.2} color="#fda4af" />
+      <ambientLight intensity={0.35} />
+      <pointLight position={[3, 2, 4]} intensity={2.2} color="#fb7185" />
+      <pointLight position={[-3, -2, -3]} intensity={2.2} color="#f43f5e" />
+      <pointLight position={[0, 4, 0]} intensity={1.4} color="#fda4af" />
       <directionalLight position={[0, 3, 5]} intensity={0.4} color="#fecdd3" />
 
-      <Float speed={1.5} rotationIntensity={0.15} floatIntensity={0.3}>
-        <DNAStrand scrollProgress={scrollProgress} images={images} />
+      <Float speed={1.2} rotationIntensity={0.1} floatIntensity={0.25}>
+        <DNAStrand rotationRef={rotationRef} />
       </Float>
 
       <Environment preset="night" />
       <EffectComposer multisampling={4}>
         <Bloom
-          intensity={0.9}
+          intensity={0.85}
           luminanceThreshold={0.25}
           luminanceSmoothing={0.9}
           mipmapBlur
@@ -206,22 +203,16 @@ function DNAScene({
   );
 }
 
-export function DNAHelix({
-  scrollProgress,
-  images,
-}: {
-  scrollProgress: React.MutableRefObject<number>;
-  images: ProjectImage[];
-}) {
+export function DNAHelix({ rotationRef }: Props) {
   return (
     <Canvas
       dpr={[1, 1.5]}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-      camera={{ position: [0, 0, 7], fov: 45 }}
+      camera={{ position: [0, 0, 7], fov: 42 }}
       style={{ width: "100%", height: "100%" }}
     >
       <React.Suspense fallback={null}>
-        <DNAScene scrollProgress={scrollProgress} images={images} />
+        <Scene rotationRef={rotationRef} />
       </React.Suspense>
     </Canvas>
   );

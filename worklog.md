@@ -203,3 +203,41 @@ Stage Summary:
 - Hero 3D orb now scales 1x → 2.8x as you scroll down the hero
 - Projects section now has a 3D DNA double helix that rotates as you scroll, with project images on the rungs
 - All content, buttons, links preserved
+
+---
+Task ID: 8
+Agent: main
+Task: Rebuild project showcase with scroll-driven 3D DNA double helix using GSAP ScrollTrigger.
+
+Work Log:
+- Installed gsap package
+- Rebuilt DNA helix component (dna-helix.tsx):
+  - 72 spheres per strand × 2 strands = 144 total spheres (instanced meshes for performance)
+  - Real helix shape: 4 full turns, height 9, radius 1.35
+  - Alternating colors: pink, coral, light pink, soft pink, near-white — cycling palette
+  - Glossy material (metalness 0.65, roughness 0.15) with emissive glow
+  - Thin cylinder rungs every 3rd sphere connecting the strands
+  - Rotation driven by external rotationRef (set by GSAP ScrollTrigger)
+  - Bloom + vignette postprocessing, coral/rose point lighting
+- Built new ProjectShowcase component (project-showcase.tsx) with two modes:
+  - DESKTOP: GSAP ScrollTrigger pinned section (pin: true, scrub: true)
+    - Section pins for 300% scroll height
+    - Scroll progress 0→1 maps to helix rotation.y = 0→360°
+    - Active project index determined by progress slices (0-1/3, 1/3-2/3, 2/3-1)
+    - Image slides/fades in from left (translateX -60 → 0, opacity 0 → 1) per project
+    - Right-side title/description/bullets panel crossfades in sync
+    - "01 / 03" counter synced to active project
+    - "Scroll to rotate" hint fades out once scrolling starts (onLeaveBack resets)
+  - MOBILE: stacked layout with auto-rotate (no scroll-pin to avoid jank)
+    - DNA canvas on top, image + text below
+    - Projects cycle automatically every ~5s
+- Replaced old Projects section with ProjectShowcase in page.tsx
+- Lint clean
+- VLM verified: DNA double helix with glossy coral spheres + rungs visible, project image + counter on right, professional and eye-catching
+
+Stage Summary:
+- Project showcase replaced with scroll-pinned 3D DNA double helix
+- 144 instanced glossy spheres in real helix shape (4 turns)
+- GSAP ScrollTrigger pins section, drives full 360° rotation + project swaps
+- Image reveals from left, text panel crossfades, counter synced
+- Mobile uses auto-rotate stacked layout (no pin)
