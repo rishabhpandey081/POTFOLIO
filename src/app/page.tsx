@@ -1,5 +1,4 @@
 import { FloatingNav } from "@/components/floating-nav";
-import { LoadingIntro } from "@/components/loading-intro";
 import { CustomCursor } from "@/components/custom-cursor";
 import { Hero } from "@/components/sections/hero";
 import { MotionWords } from "@/components/sections/motion-words";
@@ -14,7 +13,6 @@ export default function Home() {
   return (
     <div className="relative flex min-h-screen flex-col">
       <div className="grain-overlay" aria-hidden />
-      <LoadingIntro />
       <CustomCursor />
       <FloatingNav />
       <main className="flex-1">
