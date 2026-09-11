@@ -187,8 +187,8 @@ function DesktopShowcase() {
       {/* Pinned panel — stays fixed while scrolling through 300% height */}
       <div ref={pinRef} className="relative h-screen w-full">
         <div className="mx-auto grid h-full max-w-6xl grid-cols-2 items-center gap-8 px-6">
-          {/* LEFT — DNA Helix canvas (rotation never touched) */}
-          <div className="relative h-[70vh]">
+          {/* LEFT — DNA Helix canvas (centered, rotation never touched) */}
+          <div className="relative flex h-[70vh] items-center justify-center">
             <LazyMount>
               <DNAHelix rotationRef={rotationRef} />
             </LazyMount>
@@ -354,7 +354,7 @@ function MobileShowcase() {
       <div className="mx-auto max-w-6xl px-6">
         <SectionLabel index="03" title="Selected Work" />
 
-        <div className="relative mb-6 h-[55vh]">
+        <div className="relative mb-6 flex h-[55vh] items-center justify-center">
           <LazyMount>
             <DNAHelix rotationRef={rotationRef} />
           </LazyMount>
