@@ -14,15 +14,25 @@ import * as THREE from "three";
 function EnergyCore() {
   const mesh = React.useRef<THREE.Mesh>(null);
   const inner = React.useRef<THREE.Mesh>(null);
+  const { pointer } = useThree();
+  // Target rotation driven by mouse, smoothed via lerp
+  const targetRot = React.useRef({ x: 0, y: 0 });
 
   useFrame((state, delta) => {
     if (mesh.current) {
-      mesh.current.rotation.y += delta * 0.2;
-      mesh.current.rotation.x += delta * 0.08;
+      // Mouse drives the target rotation: pointer.x (-1..1) → Y rotation, pointer.y → X rotation
+      targetRot.current.y = pointer.x * 1.2;
+      targetRot.current.x = -pointer.y * 0.8;
+      // Smoothly interpolate current rotation toward the mouse-driven target
+      mesh.current.rotation.y += (targetRot.current.y - mesh.current.rotation.y) * 0.05;
+      mesh.current.rotation.x += (targetRot.current.x - mesh.current.rotation.x) * 0.05;
+      // Add a gentle continuous spin so it's never fully static
+      mesh.current.rotation.y += delta * 0.05;
     }
     if (inner.current) {
-      inner.current.rotation.y -= delta * 0.35;
-      inner.current.rotation.z += delta * 0.15;
+      // Inner core rotates opposite for visual depth
+      inner.current.rotation.y -= delta * 0.15;
+      inner.current.rotation.z += delta * 0.08;
       const t = state.clock.elapsedTime;
       const s = 1 + Math.sin(t * 1.5) * 0.04;
       inner.current.scale.setScalar(s);
