@@ -9,6 +9,11 @@ import { Journey } from "@/components/sections/journey";
 import { Contact } from "@/components/sections/contact";
 import { Footer } from "@/components/sections/footer";
 
+// Force the page to be fully static — no SSR on each request.
+// This prevents the server from crashing under repeated request load.
+export const dynamic = "force-static";
+export const revalidate = false;
+
 export default function Home() {
   return (
     <div className="relative flex min-h-screen flex-col">
