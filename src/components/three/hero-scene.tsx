@@ -2,19 +2,13 @@
 
 import * as React from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import {
-  Float,
-  Environment,
-  AdaptiveDpr,
-  Sparkles,
-} from "@react-three/drei";
-import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
+import { Float, AdaptiveDpr } from "@react-three/drei";
 import * as THREE from "three";
 
 /**
- * Glowing energy core — an icosahedron with a pulsing emissive glow,
- * surrounded by a rotating wireframe shell and orbiting particle ring.
- * Much more elegant and "alive" than a torus knot.
+ * Lightweight energy core — icosahedron + wireframe shell.
+ * No postprocessing (Bloom/ChromaticAberration were causing OOM kills).
+ * Rotation is driven externally via rotationRef (set by scroll).
  */
 
 function EnergyCore() {
@@ -29,7 +23,6 @@ function EnergyCore() {
     if (inner.current) {
       inner.current.rotation.y -= delta * 0.35;
       inner.current.rotation.z += delta * 0.15;
-      // pulse scale
       const t = state.clock.elapsedTime;
       const s = 1 + Math.sin(t * 1.5) * 0.04;
       inner.current.scale.setScalar(s);
@@ -40,7 +33,7 @@ function EnergyCore() {
     <Float speed={1.0} rotationIntensity={0.25} floatIntensity={0.6}>
       {/* Outer wireframe shell */}
       <mesh ref={mesh} scale={1.6}>
-        <icosahedronGeometry args={[1, 2]} />
+        <icosahedronGeometry args={[1, 1]} />
         <meshBasicMaterial
           color="#34d399"
           wireframe
@@ -51,70 +44,22 @@ function EnergyCore() {
 
       {/* Glowing solid core */}
       <mesh ref={inner} scale={1.15}>
-        <icosahedronGeometry args={[1, 4]} />
+        <icosahedronGeometry args={[1, 2]} />
         <meshStandardMaterial
           color="#10b981"
           emissive="#10b981"
           emissiveIntensity={0.6}
           roughness={0.15}
           metalness={0.7}
-          envMapIntensity={1.5}
         />
       </mesh>
 
       {/* Inner bright glow */}
       <mesh scale={0.7}>
-        <icosahedronGeometry args={[1, 3]} />
+        <icosahedronGeometry args={[1, 1]} />
         <meshBasicMaterial color="#6ee7b7" transparent opacity={0.4} />
       </mesh>
     </Float>
-  );
-}
-
-function OrbitRing({
-  radius,
-  speed,
-  color,
-  count,
-}: {
-  radius: number;
-  speed: number;
-  color: string;
-  count: number;
-}) {
-  const ref = React.useRef<THREE.Group>(null);
-  useFrame((state) => {
-    if (!ref.current) return;
-    ref.current.rotation.y = state.clock.elapsedTime * speed;
-    ref.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.3) * 0.3;
-  });
-
-  const positions = React.useMemo(() => {
-    const arr: [number, number, number][] = [];
-    for (let i = 0; i < count; i++) {
-      const angle = (i / count) * Math.PI * 2;
-      arr.push([
-        Math.cos(angle) * radius,
-        Math.sin(angle * 2.5) * 0.15,
-        Math.sin(angle) * radius,
-      ]);
-    }
-    return arr;
-  }, [radius, count]);
-
-  return (
-    <group ref={ref}>
-      {positions.map((p, i) => (
-        <mesh key={i} position={p}>
-          <sphereGeometry args={[0.04, 12, 12]} />
-          <meshStandardMaterial
-            color={color}
-            emissive={color}
-            emissiveIntensity={3}
-          />
-        </mesh>
-      ))}
-    </group>
   );
 }
 
@@ -132,32 +77,14 @@ function Rig() {
 function SceneContent() {
   return (
     <>
-      <ambientLight intensity={0.25} />
-      <pointLight position={[4, 3, 4]} intensity={2.5} color="#34d399" />
-      <pointLight position={[-5, -2, -3]} intensity={2.5} color="#10b981" />
-      <pointLight position={[0, 5, -2]} intensity={1.5} color="#6ee7b7" />
-      <directionalLight position={[0, 3, 5]} intensity={0.4} color="#a7f3d0" />
+      <ambientLight intensity={0.4} />
+      <pointLight position={[4, 3, 4]} intensity={2} color="#34d399" />
+      <pointLight position={[-5, -2, -3]} intensity={2} color="#10b981" />
+      <pointLight position={[0, 5, -2]} intensity={1.2} color="#6ee7b7" />
 
       <EnergyCore />
-
-      <OrbitRing radius={2.4} speed={0.4} color="#34d399" count={8} />
-      <OrbitRing radius={2.9} speed={-0.3} color="#5eead4" count={6} />
-      <OrbitRing radius={2.0} speed={0.6} color="#6ee7b7" count={5} />
-
-      <Sparkles count={25} scale={9} size={2} speed={0.3} opacity={0.5} color="#6ee7b7" />
-
-      <Environment preset="night" />
       <Rig />
-      <EffectComposer multisampling={2}>
-        <Bloom
-          intensity={1.2}
-          luminanceThreshold={0.2}
-          luminanceSmoothing={0.9}
-          mipmapBlur
-          radius={0.85}
-        />
-        <Vignette eskil={false} offset={0.15} darkness={0.65} />
-      </EffectComposer>
+      {/* No postprocessing — removed Bloom/Vignette/ChromaticAberration to fix crashes */}
       <AdaptiveDpr pixelated />
     </>
   );
@@ -166,12 +93,8 @@ function SceneContent() {
 export function HeroScene() {
   return (
     <Canvas
-      dpr={[1, 1.5]}
-      gl={{
-        antialias: true,
-        alpha: true,
-        powerPreference: "high-performance",
-      }}
+      dpr={[1, 1]}
+      gl={{ antialias: false, alpha: true, powerPreference: "default" }}
       camera={{ position: [0, 0.3, 6], fov: 42 }}
       style={{ width: "100%", height: "100%" }}
     >

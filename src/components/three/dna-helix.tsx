@@ -2,8 +2,7 @@
 
 import * as React from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { AdaptiveDpr, Float } from "@react-three/drei";
-import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
+import { Float, AdaptiveDpr } from "@react-three/drei";
 import * as THREE from "three";
 
 type Props = {
@@ -11,14 +10,9 @@ type Props = {
 };
 
 // ─── Parametric double-helix geometry ────────────────────────────────────
-// Exact formula per spec:
-//   angle = i * angleStep
-//   y     = i * verticalStep - (N * verticalStep) / 2
-//   A: x = R*cos(angle),     z = R*sin(angle)
-//   B: x = R*cos(angle+π),   z = R*sin(angle+π)
-const N = 80; // points per strand
-const ANGLE_STEP = 0.35; // twist tightness
-const VERTICAL_STEP = 0.13; // vertical spacing
+const N = 50; // points per strand (reduced from 80 for performance)
+const ANGLE_STEP = 0.35;
+const VERTICAL_STEP = 0.13;
 const RADIUS = 1.35;
 
 function buildStrand(phase: number) {
@@ -39,11 +33,6 @@ function buildStrand(phase: number) {
 
 const BLUE = "#3b82f6";
 
-/**
- * DNA double helix — parametric, two intertwined strands of translucent
- * glowing blue spheres, connected by straight blue "rung" lines for
- * every point. Rotation driven externally via rotationRef.
- */
 function DNAStrand({ rotationRef }: Props) {
   const groupRef = React.useRef<THREE.Group>(null);
   const strandARef = React.useRef<THREE.InstancedMesh>(null);
@@ -53,7 +42,6 @@ function DNAStrand({ rotationRef }: Props) {
   const strandA = React.useMemo(() => buildStrand(0), []);
   const strandB = React.useMemo(() => buildStrand(Math.PI), []);
 
-  // Rungs: connect Strand A[i] to Strand B[i] for every point
   const rungs = React.useMemo(() => {
     const out: { pos: THREE.Vector3; quat: THREE.Quaternion; len: number }[] = [];
     const up = new THREE.Vector3(0, 1, 0);
@@ -69,7 +57,6 @@ function DNAStrand({ rotationRef }: Props) {
     return out;
   }, [strandA, strandB]);
 
-  // Apply instance matrices
   React.useEffect(() => {
     const dummy = new THREE.Object3D();
     if (strandARef.current) {
@@ -105,48 +92,44 @@ function DNAStrand({ rotationRef }: Props) {
   useFrame((state) => {
     if (!groupRef.current) return;
     const scroll = rotationRef.current;
-    groupRef.current.rotation.y = scroll * Math.PI * 2; // full 360°
+    groupRef.current.rotation.y = scroll * Math.PI * 2;
     groupRef.current.rotation.x = Math.sin(state.clock.elapsedTime * 0.3) * 0.06;
   });
 
   return (
     <group ref={groupRef}>
-      {/* Strand A — translucent glowing blue spheres */}
+      {/* Strand A — blue spheres (low-poly for performance) */}
       <instancedMesh ref={strandARef} args={[undefined, undefined, N]}>
-        <sphereGeometry args={[0.075, 16, 16]} />
+        <sphereGeometry args={[0.075, 10, 10]} />
         <meshStandardMaterial
           color={BLUE}
           emissive={BLUE}
-          emissiveIntensity={0.6}
-          roughness={0.1}
+          emissiveIntensity={0.5}
+          roughness={0.2}
           metalness={0.3}
           transparent
-          opacity={0.5}
+          opacity={0.6}
         />
       </instancedMesh>
 
-      {/* Strand B — translucent glowing blue spheres */}
+      {/* Strand B — blue spheres */}
       <instancedMesh ref={strandBRef} args={[undefined, undefined, N]}>
-        <sphereGeometry args={[0.075, 16, 16]} />
+        <sphereGeometry args={[0.075, 10, 10]} />
         <meshStandardMaterial
           color={BLUE}
           emissive={BLUE}
-          emissiveIntensity={0.6}
-          roughness={0.1}
+          emissiveIntensity={0.5}
+          roughness={0.2}
           metalness={0.3}
           transparent
-          opacity={0.5}
+          opacity={0.6}
         />
       </instancedMesh>
 
-      {/* Rungs — thin blue cylinders connecting A[i] to B[i] */}
+      {/* Rungs — thin blue lines */}
       <instancedMesh ref={rungRef} args={[undefined, undefined, N]}>
-        <cylinderGeometry args={[0.008, 0.008, 1, 6]} />
-        <meshBasicMaterial
-          color={BLUE}
-          transparent
-          opacity={0.35}
-        />
+        <cylinderGeometry args={[0.008, 0.008, 1, 5]} />
+        <meshBasicMaterial color={BLUE} transparent opacity={0.4} />
       </instancedMesh>
     </group>
   );
@@ -155,25 +138,15 @@ function DNAStrand({ rotationRef }: Props) {
 function Scene({ rotationRef }: Props) {
   return (
     <>
-      <ambientLight intensity={0.4} />
-      <pointLight position={[3, 2, 4]} intensity={2} color={BLUE} />
-      <pointLight position={[-3, -2, -3]} intensity={2} color={BLUE} />
-      <pointLight position={[0, 4, 0]} intensity={1.2} color="#60a5fa" />
+      <ambientLight intensity={0.5} />
+      <pointLight position={[3, 2, 4]} intensity={1.5} color={BLUE} />
+      <pointLight position={[-3, -2, -3]} intensity={1.5} color={BLUE} />
 
       <Float speed={1.2} rotationIntensity={0.1} floatIntensity={0.25}>
         <DNAStrand rotationRef={rotationRef} />
       </Float>
 
-      <EffectComposer multisampling={2}>
-        <Bloom
-          intensity={0.8}
-          luminanceThreshold={0.2}
-          luminanceSmoothing={0.9}
-          mipmapBlur
-          radius={0.7}
-        />
-        <Vignette eskil={false} offset={0.2} darkness={0.6} />
-      </EffectComposer>
+      {/* No postprocessing (Bloom/Vignette were causing memory spikes) */}
       <AdaptiveDpr pixelated />
     </>
   );
@@ -182,8 +155,8 @@ function Scene({ rotationRef }: Props) {
 export function DNAHelix({ rotationRef }: Props) {
   return (
     <Canvas
-      dpr={[1, 1.5]}
-      gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+      dpr={[1, 1]}
+      gl={{ antialias: false, alpha: true, powerPreference: "default" }}
       camera={{ position: [0, 0, 7], fov: 42 }}
       style={{ width: "100%", height: "100%" }}
     >
