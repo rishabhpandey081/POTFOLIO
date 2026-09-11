@@ -34,11 +34,11 @@ function buildStrand(offset: number) {
 
 // Palette: pink, coral, white, gold accents — cycles
 const PALETTE = [
-  "#fb7185", // pink
-  "#f43f5e", // coral
-  "#fecdd3", // light pink
-  "#fda4af", // soft pink
-  "#fff1f2", // near-white pink
+  "#34d399", // emerald
+  "#10b981", // green
+  "#6ee7b7", // light green
+  "#5eead4", // teal
+  "#a7f3d0", // pale mint
 ];
 
 function colorForIndex(i: number): THREE.Color {
@@ -140,7 +140,7 @@ function DNAStrand({ rotationRef }: Props) {
         <meshStandardMaterial
           roughness={0.15}
           metalness={0.65}
-          emissive="#f43f5e"
+          emissive="#10b981"
           emissiveIntensity={0.35}
           envMapIntensity={1.4}
         />
@@ -152,7 +152,7 @@ function DNAStrand({ rotationRef }: Props) {
         <meshStandardMaterial
           roughness={0.15}
           metalness={0.65}
-          emissive="#fb7185"
+          emissive="#34d399"
           emissiveIntensity={0.35}
           envMapIntensity={1.4}
         />
@@ -164,7 +164,7 @@ function DNAStrand({ rotationRef }: Props) {
         <meshStandardMaterial
           roughness={0.3}
           metalness={0.5}
-          emissive="#fb7185"
+          emissive="#34d399"
           emissiveIntensity={0.4}
           transparent
           opacity={0.7}
@@ -178,10 +178,10 @@ function Scene({ rotationRef }: Props) {
   return (
     <>
       <ambientLight intensity={0.35} />
-      <pointLight position={[3, 2, 4]} intensity={2.2} color="#fb7185" />
-      <pointLight position={[-3, -2, -3]} intensity={2.2} color="#f43f5e" />
-      <pointLight position={[0, 4, 0]} intensity={1.4} color="#fda4af" />
-      <directionalLight position={[0, 3, 5]} intensity={0.4} color="#fecdd3" />
+      <pointLight position={[3, 2, 4]} intensity={2.2} color="#34d399" />
+      <pointLight position={[-3, -2, -3]} intensity={2.2} color="#10b981" />
+      <pointLight position={[0, 4, 0]} intensity={1.4} color="#6ee7b7" />
+      <directionalLight position={[0, 3, 5]} intensity={0.4} color="#a7f3d0" />
 
       <Float speed={1.2} rotationIntensity={0.1} floatIntensity={0.25}>
         <DNAStrand rotationRef={rotationRef} />
