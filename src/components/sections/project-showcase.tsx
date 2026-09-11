@@ -12,6 +12,29 @@ const DNAHelix = dynamic(
   { ssr: false, loading: () => null }
 );
 
+/** Only renders its children once they scroll near the viewport.
+ *  Prevents both 3D canvases from initializing on first page load. */
+function LazyMount({ children }: { children: React.ReactNode }) {
+  const ref = React.useRef<HTMLDivElement>(null);
+  const [show, setShow] = React.useState(false);
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setShow(true);
+          obs.disconnect();
+        }
+      },
+      { rootMargin: "300px" }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return <div ref={ref}>{show ? children : null}</div>;
+}
+
 function SectionLabel({ index, title }: { index: string; title: string }) {
   return (
     <div className="mb-12">
@@ -166,7 +189,9 @@ function DesktopShowcase() {
         <div className="mx-auto grid h-full max-w-6xl grid-cols-2 items-center gap-8 px-6">
           {/* LEFT — DNA Helix canvas (rotation never touched) */}
           <div className="relative h-[70vh]">
-            <DNAHelix rotationRef={rotationRef} />
+            <LazyMount>
+              <DNAHelix rotationRef={rotationRef} />
+            </LazyMount>
             <motion.div
               animate={{ opacity: hintVisible ? 1 : 0 }}
               transition={{ duration: 0.4 }}
@@ -330,7 +355,9 @@ function MobileShowcase() {
         <SectionLabel index="03" title="Selected Work" />
 
         <div className="relative mb-6 h-[55vh]">
-          <DNAHelix rotationRef={rotationRef} />
+          <LazyMount>
+            <DNAHelix rotationRef={rotationRef} />
+          </LazyMount>
         </div>
 
         <div className="mb-4 flex items-center gap-3">

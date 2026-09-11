@@ -10,7 +10,7 @@ type Props = {
   rotationRef: React.MutableRefObject<number>;
 };
 
-const SPHERES_PER_STRAND = 40;
+const SPHERES_PER_STRAND = 28;
 const HELIX_HEIGHT = 9;
 const RADIUS = 1.35;
 const TURNS = 4;

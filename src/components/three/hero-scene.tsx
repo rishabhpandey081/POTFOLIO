@@ -140,11 +140,11 @@ function SceneContent() {
 
       <EnergyCore />
 
-      <OrbitRing radius={2.4} speed={0.4} color="#34d399" count={14} />
-      <OrbitRing radius={2.9} speed={-0.3} color="#5eead4" count={10} />
-      <OrbitRing radius={2.0} speed={0.6} color="#6ee7b7" count={8} />
+      <OrbitRing radius={2.4} speed={0.4} color="#34d399" count={8} />
+      <OrbitRing radius={2.9} speed={-0.3} color="#5eead4" count={6} />
+      <OrbitRing radius={2.0} speed={0.6} color="#6ee7b7" count={5} />
 
-      <Sparkles count={40} scale={10} size={2} speed={0.3} opacity={0.5} color="#6ee7b7" />
+      <Sparkles count={25} scale={9} size={2} speed={0.3} opacity={0.5} color="#6ee7b7" />
 
       <Environment preset="night" />
       <Rig />
