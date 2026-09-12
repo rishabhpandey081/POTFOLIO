@@ -5,32 +5,21 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Float, AdaptiveDpr } from "@react-three/drei";
 import * as THREE from "three";
 
-/**
- * Lightweight energy core — icosahedron + wireframe shell.
- * No postprocessing (Bloom/ChromaticAberration were causing OOM kills).
- * Rotation is driven externally via rotationRef (set by scroll).
- */
-
 function EnergyCore() {
   const mesh = React.useRef<THREE.Mesh>(null);
   const inner = React.useRef<THREE.Mesh>(null);
   const { pointer } = useThree();
-  // Target rotation driven by mouse, smoothed via lerp
   const targetRot = React.useRef({ x: 0, y: 0 });
 
   useFrame((state, delta) => {
     if (mesh.current) {
-      // Mouse drives the target rotation: pointer.x (-1..1) → Y rotation, pointer.y → X rotation
       targetRot.current.y = pointer.x * 1.2;
       targetRot.current.x = -pointer.y * 0.8;
-      // Smoothly interpolate current rotation toward the mouse-driven target
       mesh.current.rotation.y += (targetRot.current.y - mesh.current.rotation.y) * 0.05;
       mesh.current.rotation.x += (targetRot.current.x - mesh.current.rotation.x) * 0.05;
-      // Add a gentle continuous spin so it's never fully static
       mesh.current.rotation.y += delta * 0.05;
     }
     if (inner.current) {
-      // Inner core rotates opposite for visual depth
       inner.current.rotation.y -= delta * 0.15;
       inner.current.rotation.z += delta * 0.08;
       const t = state.clock.elapsedTime;
@@ -41,18 +30,10 @@ function EnergyCore() {
 
   return (
     <Float speed={1.0} rotationIntensity={0.25} floatIntensity={0.6}>
-      {/* Outer wireframe shell */}
       <mesh ref={mesh} scale={1.6}>
         <icosahedronGeometry args={[1, 1]} />
-        <meshBasicMaterial
-          color="#34d399"
-          wireframe
-          transparent
-          opacity={0.35}
-        />
+        <meshBasicMaterial color="#34d399" wireframe transparent opacity={0.35} />
       </mesh>
-
-      {/* Glowing solid core */}
       <mesh ref={inner} scale={1.15}>
         <icosahedronGeometry args={[1, 2]} />
         <meshStandardMaterial
@@ -63,25 +44,12 @@ function EnergyCore() {
           metalness={0.7}
         />
       </mesh>
-
-      {/* Inner bright glow */}
       <mesh scale={0.7}>
         <icosahedronGeometry args={[1, 1]} />
         <meshBasicMaterial color="#6ee7b7" transparent opacity={0.4} />
       </mesh>
     </Float>
   );
-}
-
-function Rig() {
-  const { camera, pointer } = useThree();
-  const vec = React.useRef(new THREE.Vector3());
-  useFrame(() => {
-    vec.current.set(pointer.x * 1.0, pointer.y * 0.7 + 0.3, 6);
-    camera.position.lerp(vec.current, 0.04);
-    camera.lookAt(0, 0, 0);
-  });
-  return null;
 }
 
 function SceneContent() {
@@ -91,10 +59,7 @@ function SceneContent() {
       <pointLight position={[4, 3, 4]} intensity={2} color="#34d399" />
       <pointLight position={[-5, -2, -3]} intensity={2} color="#10b981" />
       <pointLight position={[0, 5, -2]} intensity={1.2} color="#6ee7b7" />
-
       <EnergyCore />
-      <Rig />
-      {/* No postprocessing — removed Bloom/Vignette/ChromaticAberration to fix crashes */}
       <AdaptiveDpr pixelated />
     </>
   );

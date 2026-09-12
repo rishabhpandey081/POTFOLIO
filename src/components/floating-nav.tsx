@@ -75,15 +75,11 @@ export function FloatingNav() {
               : "border-transparent bg-background/30 backdrop-blur-lg"
           )}
         >
-          {/* Logo */}
+          {/* Logo — just the name, no RP badge */}
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="group flex items-center gap-2.5 rounded-full pl-2"
+            className="group flex items-center gap-2.5 rounded-full px-2"
           >
-            <span className="relative grid h-8 w-8 place-items-center rounded-full bg-primary/15 font-mono text-xs font-bold text-primary ring-1 ring-primary/30">
-              {profile.initials}
-              <span className="absolute inset-0 rounded-full bg-primary/20 blur-md opacity-0 transition-opacity group-hover:opacity-100" />
-            </span>
             <span className="hidden text-sm font-semibold tracking-tight sm:block">
               {profile.firstName}
             </span>

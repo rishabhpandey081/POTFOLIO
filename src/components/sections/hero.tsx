@@ -1,21 +1,31 @@
 "use client";
 
 import * as React from "react";
+import dynamic from "next/dynamic";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowDown, MapPin } from "lucide-react";
 import { profile } from "@/lib/portfolio-data";
 import { VoiceIntroPlayer } from "@/components/voice-player";
+import { HeroFallback } from "@/components/three/hero-fallback";
+import { useDeviceCapability } from "@/hooks/use-device-capability";
+
+const HeroScene = dynamic(
+  () => import("@/components/three/hero-scene").then((m) => m.HeroScene),
+  { ssr: false, loading: () => <HeroFallback /> }
+);
 
 export function Hero() {
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const capable = useDeviceCapability();
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"],
   });
   const textY = useTransform(scrollYProgress, [0, 1], [0, 120]);
   const textOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
-  const orbScale = useTransform(scrollYProgress, [0, 1], [1, 2]);
-  const orbOpacity = useTransform(scrollYProgress, [0.7, 1], [1, 0]);
+  const sceneScale = useTransform(scrollYProgress, [0, 1], [1, 2]);
+  const sceneY = useTransform(scrollYProgress, [0, 1], [0, -60]);
+  const sceneOpacity = useTransform(scrollYProgress, [0.7, 1], [1, 0]);
 
   const go = (href: string) =>
     document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
@@ -25,16 +35,17 @@ export function Hero() {
       ref={containerRef}
       className="relative flex min-h-screen items-center justify-center overflow-hidden"
     >
-      {/* CSS-only animated energy orb — no WebGL, never crashes */}
+      {/* 3D scene background (desktop) or CSS fallback (mobile) */}
       <motion.div
-        style={{ scale: orbScale, opacity: orbOpacity }}
-        className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"
+        style={{ scale: sceneScale, y: sceneY, opacity: sceneOpacity }}
+        className="absolute inset-0 z-0"
       >
-        <CSSOrb />
+        {capable ? <HeroScene /> : <HeroFallback />}
       </motion.div>
 
       {/* gradient vignette for legibility */}
       <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-b from-background/30 via-transparent to-background/70" />
+      <div className="pointer-events-none absolute inset-0 z-[1] bg-[radial-gradient(ellipse_at_center,transparent_30%,background_100%)]" />
 
       {/* Content */}
       <motion.div
@@ -152,53 +163,5 @@ export function Hero() {
         </motion.div>
       </motion.div>
     </section>
-  );
-}
-
-/**
- * Pure CSS animated energy orb — emerald glow with wireframe feel.
- * No WebGL, no Three.js, never crashes the server.
- */
-function CSSOrb() {
-  return (
-    <div className="relative h-[60vh] w-[60vh] max-h-[600px] max-w-[600px]">
-      {/* outer glow */}
-      <div
-        className="absolute inset-0 rounded-full animate-ambient"
-        style={{
-          background:
-            "radial-gradient(circle at 35% 35%, oklch(0.78 0.16 162 / 0.6), oklch(0.5 0.13 162 / 0.2) 40%, transparent 70%)",
-          filter: "blur(30px)",
-        }}
-      />
-      {/* core orb */}
-      <div
-        className="absolute inset-[15%] rounded-full"
-        style={{
-          background:
-            "radial-gradient(circle at 40% 40%, oklch(0.85 0.12 150 / 0.9), oklch(0.72 0.16 162 / 0.4) 50%, transparent 80%)",
-          filter: "blur(10px)",
-          animation: "ambient 8s ease-in-out infinite",
-        }}
-      />
-      {/* wireframe ring */}
-      <div
-        className="absolute inset-[10%] rounded-full border border-primary/30"
-        style={{ animation: "spin 20s linear infinite" }}
-      />
-      <div
-        className="absolute inset-[20%] rounded-full border border-primary/20"
-        style={{ animation: "spin 15s linear infinite reverse" }}
-      />
-      {/* orbiting dots */}
-      <div
-        className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary"
-        style={{ animation: "orbit1 6s linear infinite" }}
-      />
-      <div
-        className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/60"
-        style={{ animation: "orbit2 9s linear infinite" }}
-      />
-    </div>
   );
 }
