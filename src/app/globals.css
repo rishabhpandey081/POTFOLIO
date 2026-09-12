@@ -249,6 +249,12 @@
   100% { transform: translate(-50%, -50%) rotate(-360deg) translateX(40vw) rotate(360deg); }
 }
 
+/* Spin for CSS orb rings */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 /* Reduce motion for users who prefer it */
 @media (prefers-reduced-motion: reduce) {
   *,
