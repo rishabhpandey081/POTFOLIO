@@ -79,7 +79,7 @@ export function Hero() {
         >
           Rishabh
           <br />
-          <span className="text-white">Pandey</span>
+          <span className="text-foreground">Pandey</span>
         </motion.h1>
 
         {/* Role */}
@@ -87,7 +87,7 @@ export function Hero() {
           initial={false}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.55 }}
-          className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 font-mono text-xs uppercase tracking-[0.2em] text-white/90 sm:text-sm"
+          className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 font-mono text-xs uppercase tracking-[0.2em] text-foreground/90 sm:text-sm"
         >
           <span>Software Developer</span>
           <span className="h-1 w-1 rounded-full bg-primary" />

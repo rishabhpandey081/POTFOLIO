@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion } from "framer-motion";
-import { Mail, Phone, MapPin, Loader2, CheckCircle2, ArrowUpRight } from "lucide-react";
+import { Mail, Phone, MapPin, Loader2, CheckCircle2, ArrowUpRight, Download, FileText } from "lucide-react";
 import { profile } from "@/lib/portfolio-data";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,6 +38,14 @@ export function Contact() {
         title: "Message sent",
         description: "Thanks for reaching out — I'll reply soon.",
       });
+      // Also compose an email so the owner actually receives it
+      const name = String(payload.name || "");
+      const email = String(payload.email || "");
+      const subject = String(payload.subject || "Portfolio inquiry");
+      const message = String(payload.message || "");
+      const mailtoLink = `mailto:${profile.email}?subject=${encodeURIComponent(`[Portfolio] ${subject} — from ${name}`)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`)}`;
+      // Open email client in a new tab (non-blocking)
+      window.open(mailtoLink, "_blank");
       form.reset();
       setTimeout(() => setStatus("idle"), 4000);
     } catch (err) {
@@ -145,6 +153,33 @@ export function Contact() {
                     </span>
                   </a>
                 ))}
+              </div>
+            </div>
+
+            {/* Download Resume / CV */}
+            <div className="rounded-2xl border border-border/40 bg-card/30 p-5 backdrop-blur-md">
+              <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                Download
+              </p>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <a
+                  href="/files/Rishabh_Pandey_Resume.pdf"
+                  download
+                  className="group flex flex-1 items-center justify-center gap-2 rounded-xl bg-foreground px-4 py-3 text-sm font-medium text-background transition-transform hover:scale-[1.02]"
+                >
+                  <FileText className="h-4 w-4" />
+                  Resume
+                  <Download className="h-3.5 w-3.5 transition-transform group-hover:translate-y-0.5" />
+                </a>
+                <a
+                  href="/files/Rishabh_Pandey_CV.pdf"
+                  download
+                  className="group flex flex-1 items-center justify-center gap-2 rounded-xl border border-border/60 bg-background/40 px-4 py-3 text-sm font-medium transition-colors hover:border-primary/40 hover:text-foreground"
+                >
+                  <FileText className="h-4 w-4" />
+                  CV
+                  <Download className="h-3.5 w-3.5 transition-transform group-hover:translate-y-0.5" />
+                </a>
               </div>
             </div>
           </motion.div>
