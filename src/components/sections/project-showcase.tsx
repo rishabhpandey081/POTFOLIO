@@ -172,7 +172,15 @@ function DesktopShowcase() {
                     }}
                   >
                     <div className={`absolute inset-0 bg-gradient-to-br ${p.accent}`} />
-                    <img src={p.image} alt={p.title} className="relative h-full w-full object-cover" loading="lazy" />
+                    <img
+                      src={p.image}
+                      alt={p.title}
+                      width={800}
+                      height={500}
+                      className="absolute inset-0 h-full w-full object-cover"
+                      loading="eager"
+                      decoding="async"
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-background/40 to-transparent" />
                   </div>
                 );
@@ -270,7 +278,7 @@ function MobileShowcase() {
           className="relative mb-5 aspect-[16/10] overflow-hidden rounded-2xl border border-border/40"
         >
           <div className={`absolute inset-0 bg-gradient-to-br ${active.accent}`} />
-          <img src={active.image} alt={active.title} className="relative h-full w-full object-cover" loading="lazy" />
+          <img src={active.image} alt={active.title} width={800} height={500} className="absolute inset-0 h-full w-full object-cover" loading="eager" decoding="async" />
         </motion.div>
         <motion.div key={`m-txt-${active.slug}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
           <ProjectText p={active} />
