@@ -9,10 +9,10 @@ type Props = {
   rotationRef: React.MutableRefObject<number>;
 };
 
-const N = 50;
+const N = 60;
 const ANGLE_STEP = 0.35;
-const VERTICAL_STEP = 0.13;
-const RADIUS = 1.35;
+const VERTICAL_STEP = 0.16;
+const RADIUS = 1.5;
 
 function buildStrand(phase: number) {
   const pts: THREE.Vector3[] = [];
@@ -122,7 +122,7 @@ function Scene({ rotationRef }: Props) {
 
 export function DNAHelix({ rotationRef }: Props) {
   return (
-    <Canvas dpr={[1, 1]} gl={{ antialias: false, alpha: true }} camera={{ position: [0, 0, 7], fov: 42 }} style={{ width: "100%", height: "100%" }}>
+    <Canvas dpr={[1, 1]} gl={{ antialias: false, alpha: true }} camera={{ position: [0, 0, 5.5], fov: 50 }} style={{ width: "100%", height: "100%" }}>
       <React.Suspense fallback={null}>
         <Scene rotationRef={rotationRef} />
       </React.Suspense>

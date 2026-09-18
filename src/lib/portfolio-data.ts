@@ -93,29 +93,28 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    slug: "virtus",
-    title: "Virtus — AI Interview Coach",
-    subtitle: "Full-stack interview simulation platform",
+    slug: "portfolio",
+    title: "Portfolio Website",
+    subtitle: "This very site — 3D & motion-driven",
     description:
-      "An interactive full-stack interview simulation platform delivering real-time, adaptive technical interview evaluation and feedback. Combines a prompt-driven resume builder, mock interview simulator, and job-description evaluator in a single responsive app.",
+      "A personal portfolio designed and engineered from the ground up to showcase projects, skills, and profile links — built with React Three Fiber, real WebGL, and a focus on craft over templates.",
     highlights: [
-      "Architected with Node.js, Express, and Google Gemini API (gemini-2.5-flash) for adaptive technical interview evaluation.",
-      "Integrated browser-native Web Speech and Camera APIs for hands-free voice input, audio feedback, and video simulation.",
-      "Built a clean modular client dashboard in React.js with React Router, Tailwind CSS, secure API interactions, and structured state management.",
-      "Added client-side state synchronization for instant preview updates and direct browser-to-PDF export.",
+      "Designed and deployed a personal portfolio site to showcase projects, skills, and profile links.",
+      "Real-time 3D hero scene with React Three Fiber, postprocessing bloom, and scroll-driven motion.",
+      "Custom cursor, magnetic interactions, and film-grain art direction.",
     ],
-    stack: ["React.js", "Node.js", "Express.js", "Gemini API", "Tailwind CSS", "Web Speech API"],
-    image: "/images/project-virtus.png",
-    accent: "from-emerald-500/20 to-teal-500/10",
+    stack: ["React Three Fiber", "Three.js", "WebGL", "GSAP ScrollTrigger"],
+    image: "/images/project-portfolio.png",
+    accent: "from-emerald-500/20 to-green-500/10",
     repo: "https://github.com/rishabhpandey081",
     featured: true,
   },
   {
     slug: "ai-sentinel",
-    title: "AI Sentinel — Smart Security",
-    subtitle: "Real-time face recognition & attendance system",
+    title: "AI Sentinel",
+    subtitle: "Real-time face recognition attendance & security system",
     description:
-      "A real-time computer vision system that detects human presence, recognizes faces, and automates attendance logging — eliminating manual registers entirely.",
+      "A real-time face recognition attendance and security system.",
     highlights: [
       "Built a real-time face detection pipeline using Haar Cascades for fast object recognition.",
       "Implemented the LBPH algorithm for robust, accurate face recognition across varied conditions.",
@@ -129,19 +128,20 @@ export const projects: Project[] = [
     featured: true,
   },
   {
-    slug: "portfolio",
-    title: "Portfolio Website",
-    subtitle: "This very site — 3D & motion-driven",
+    slug: "virtus",
+    title: "Virtus — AI Interview Coach",
+    subtitle: "Full-stack interview simulation platform",
     description:
-      "A personal portfolio designed and engineered from the ground up to showcase projects, skills, and profile links — built with React Three Fiber, real WebGL, and a focus on craft over templates.",
+      "A full-stack interview simulation platform combining a prompt-driven resume builder, mock interview simulator, and job-description evaluator in one responsive app.",
     highlights: [
-      "Designed and deployed a personal portfolio site to showcase projects, skills, and profile links.",
-      "Real-time 3D hero scene with React Three Fiber, postprocessing bloom, and scroll-driven motion.",
-      "Custom cursor, magnetic interactions, and film-grain art direction.",
+      "Architected with Node.js, Express, and Google Gemini API (gemini-2.5-flash) for adaptive technical interview evaluation.",
+      "Integrated browser-native Web Speech and Camera APIs for hands-free voice input, audio feedback, and video simulation.",
+      "Built a clean modular client dashboard in React.js with React Router, Tailwind CSS, secure API interactions, and structured state management.",
+      "Added client-side state synchronization for instant preview updates and direct browser-to-PDF export.",
     ],
-    stack: ["Next.js", "React Three Fiber", "TypeScript", "Tailwind CSS", "Framer Motion"],
-    image: "/images/project-portfolio.png",
-    accent: "from-emerald-500/20 to-green-500/10",
+    stack: ["Node.js", "Express", "Gemini API (gemini-2.5-flash)", "React.js", "React Router", "Tailwind CSS", "Web Speech & Camera APIs"],
+    image: "/images/project-virtus.png",
+    accent: "from-emerald-500/20 to-teal-500/10",
     repo: "https://github.com/rishabhpandey081",
   },
 ];

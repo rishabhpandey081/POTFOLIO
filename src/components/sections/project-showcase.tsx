@@ -130,8 +130,8 @@ function DesktopShowcase() {
       <div className="mx-auto max-w-6xl px-6 pt-32">
         <SectionLabel index="03" title="Selected Work" />
       </div>
-      <div ref={pinRef} className="relative h-screen w-full">
-        <div className="mx-auto grid h-full max-w-6xl grid-cols-2 items-center gap-8 px-6">
+      <div ref={pinRef} className="relative flex h-screen w-full items-center justify-center">
+        <div className="mx-auto grid h-full w-full max-w-6xl grid-cols-2 items-center gap-8 px-6">
           {/* LEFT — DNA Helix canvas (centered) */}
           <div className="relative flex h-[70vh] items-center justify-center">
             <DNAHelix rotationRef={rotationRef} />
