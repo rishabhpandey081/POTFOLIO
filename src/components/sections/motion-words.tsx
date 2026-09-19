@@ -70,7 +70,7 @@ function RotatingWord({ words }: { words: string[] }) {
   React.useEffect(() => {
     const id = setInterval(() => {
       setIndex((i) => (i + 1) % words.length);
-    }, 2800);
+    }, 1500);
     return () => clearInterval(id);
   }, [words.length]);
 
