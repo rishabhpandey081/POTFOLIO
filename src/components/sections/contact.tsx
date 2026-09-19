@@ -38,14 +38,6 @@ export function Contact() {
         title: "Message sent",
         description: "Thanks for reaching out — I'll reply soon.",
       });
-      // Also compose an email so the owner actually receives it
-      const name = String(payload.name || "");
-      const email = String(payload.email || "");
-      const subject = String(payload.subject || "Portfolio inquiry");
-      const message = String(payload.message || "");
-      const mailtoLink = `mailto:${profile.email}?subject=${encodeURIComponent(`[Portfolio] ${subject} — from ${name}`)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`)}`;
-      // Open email client in a new tab (non-blocking)
-      window.open(mailtoLink, "_blank");
       form.reset();
       setTimeout(() => setStatus("idle"), 4000);
     } catch (err) {
