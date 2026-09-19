@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+const WEB3FORMS_ACCESS_KEY = "ec68bf75-a400-4b6a-a13e-edd92411f6a2";
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -28,19 +30,36 @@ export async function POST(req: Request) {
       );
     }
 
-    // Log the message (visible in Vercel function logs)
-    console.log("[CONTACT FORM]", {
-      name,
-      email,
-      subject,
-      message: message.slice(0, 100),
-      timestamp: new Date().toISOString(),
+    // Send via Web3Forms — delivers directly to pandeyrishabh889@gmail.com
+    const response = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        access_key: WEB3FORMS_ACCESS_KEY,
+        name,
+        email,
+        subject: `[Portfolio] ${subject} — from ${name}`,
+        message,
+        from_name: "Rishabh Pandey Portfolio",
+      }),
     });
 
-    return NextResponse.json({
-      ok: true,
-      message: "Thanks for reaching out! I'll get back to you soon.",
-    });
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      return NextResponse.json({
+        ok: true,
+        message: "Message sent! I'll get back to you soon.",
+      });
+    } else {
+      return NextResponse.json(
+        { ok: false, error: "Failed to send. Please try again." },
+        { status: 500 }
+      );
+    }
   } catch (err) {
     console.error("[contact] error", err);
     return NextResponse.json(
