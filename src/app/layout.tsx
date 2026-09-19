@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Rishabh Pandey" }],
   icons: {
-    icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
+    icon: "/favicon.svg",
   },
   openGraph: {
     title: "Rishabh Pandey — Software Developer & Cloud Engineer",

@@ -5,7 +5,7 @@ A personal portfolio website built with Next.js 16, React Three Fiber (3D), Type
 ## Features
 
 - **Editorial layout** with a fixed masthead sidebar
-- **Voice introduction** — AI-generated audio with a custom waveform player
+- **Voice introduction** — custom voice introduction with a waveform player
 - **Motion words** marquee (Problem Solving, Disciplined, Creative Thinking, ...)
 - **Ambient layered background** with emerald glow
 - **Contact form** with Prisma + SQLite persistence
@@ -23,7 +23,7 @@ A personal portfolio website built with Next.js 16, React Three Fiber (3D), Type
 | 3D | React Three Fiber + Drei + Postprocessing |
 | Animation | Framer Motion |
 | Database | Prisma ORM (SQLite) |
-| Audio | z-ai-web-dev-sdk TTS |
+| Audio | Pre-recorded WAV audio file |
 
 ## Getting Started
 
