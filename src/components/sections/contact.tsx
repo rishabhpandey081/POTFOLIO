@@ -21,21 +21,41 @@ export function Contact() {
     setStatus("loading");
     const form = e.currentTarget;
     const data = new FormData(form);
-    const payload = Object.fromEntries(data.entries());
+    const name = String(data.get("name") ?? "").trim();
+    const email = String(data.get("email") ?? "").trim();
+    const subject = String(data.get("subject") ?? "").trim() || "Portfolio inquiry";
+    const message = String(data.get("message") ?? "").trim();
+
+    if (!name || !email || !message) {
+      setStatus("idle");
+      toast({ title: "Missing fields", description: "Name, email, and message are required.", variant: "destructive" });
+      return;
+    }
 
     try {
-      const res = await fetch("/api/contact", {
+      // Call Web3Forms directly from the browser (free plan requires client-side)
+      const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          access_key: "ec68bf75-a400-4b6a-a13e-edd92411f6a2",
+          name,
+          email,
+          subject: `[Portfolio] ${subject}`,
+          message,
+          from_name: "Rishabh Pandey Portfolio",
+        }),
       });
       const json = await res.json();
-      if (!res.ok || !json.ok) {
-        throw new Error(json.error || "Failed to send message");
+      if (!res.ok || !json.success) {
+        throw new Error(json.message || "Failed to send message");
       }
       setStatus("success");
       toast({
-        title: "Message sent",
+        title: "Message sent!",
         description: "Thanks for reaching out — I'll reply soon.",
       });
       form.reset();
