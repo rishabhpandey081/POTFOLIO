@@ -16,7 +16,7 @@ export const profile = {
     "Currently open to SDE Intern roles where I can apply strong problem-solving, cloud, and automation skills to meaningful problems.",
   ],
   stats: [
-    { label: "LeetCode Problems", value: 70, suffix: "+" },
+    { label: "LeetCode Problems", value: 80, suffix: "+" },
     { label: "Projects Shipped", value: 3, suffix: "" },
     { label: "Certifications", value: 4, suffix: "" },
     { label: "Years Coding", value: 4, suffix: "+" },
@@ -35,7 +35,7 @@ export const profile = {
     {
       label: "LeetCode",
       href: "https://leetcode.com/u/Rishabhpandey9086/",
-      handle: "70 solved",
+      handle: "80 solved",
     },
     { label: "Email", href: "mailto:pandeyrishabh889@gmail.com", handle: "Say hi" },
   ],
@@ -174,7 +174,7 @@ export const timeline: ExperienceItem[] = [
     org: "Data Structures & Algorithms",
     type: "coursework",
     description:
-      "Deepening algorithmic problem-solving — 70+ problems solved on LeetCode and counting.",
+      "Deepening algorithmic problem-solving — 80+ problems solved on LeetCode and counting.",
   },
   {
     period: "Qualifier",
