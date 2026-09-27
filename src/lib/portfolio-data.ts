@@ -162,7 +162,7 @@ export const timeline: ExperienceItem[] = [
     org: "Inderprastha Engineering College · AKTU, Delhi",
     type: "education",
     description:
-      "Currently in 3rd Year (6th Semester). Building a strong foundation in core CS and applied software engineering.",
+      "Currently in 4th Year (7th Semester). Building a strong foundation in core CS and applied software engineering.",
     details: [
       "Relevant coursework: Data Structures, Algorithms, DBMS, Computer Networks, Operating Systems, OOP.",
       "10th: 80% (2019) · 12th: 72% (2021).",
